@@ -65,35 +65,29 @@ public class Hunter extends GoalAgent
 		KB = new KnowledgeBase( initialRoom, maze.getMazeSize(), random );
 		
 		// Goals
-		tour = new MakeTheTour(this);
-		addGoal(tour.getName(), tour);
-		
+		//tour = new MakeTheTour(this);		
 		leaveCave = new LeaveTheCave(this, random);
-		addGoal(leaveCave.getName(), leaveCave);
-		
 		killWumpus = new KillTheWumpus(this);
-		addGoal(killWumpus.getName(), killWumpus);
-		
 		getGold = new GetTheGold(this, random);
+		
+		//addGoal(tour.getName(), tour);
+		addGoal(leaveCave.getName(), leaveCave);
+		addGoal(killWumpus.getName(), killWumpus);
 		addGoal(getGold.getName(), getGold);
 		
 		// Actions
 		forward = new Forward(this);
-		addKeyAction(forward.getName(), forward);
-		
 		turnLeft = new TurnLeft(this);
-		addKeyAction(turnLeft.getName(), turnLeft);
-		
 		turnRight = new TurnRight(this);
-		addKeyAction(turnRight.getName(), turnRight);
-		
 		shoot = new Shoot(this);
-		addAction(shoot.getName(), shoot);
-		
 		grab = new Grab(this);
-		addAction(grab.getName(), grab);
-		
 		climb = new Climb(this);
+		
+		addKeyAction(forward.getName(), forward);
+		addKeyAction(turnLeft.getName(), turnLeft);
+		addKeyAction(turnRight.getName(), turnRight);
+		addAction(shoot.getName(), shoot);
+		addAction(grab.getName(), grab);
 		addAction(climb.getName(), climb);
 		
 		// Main Goal of this Agent
@@ -128,8 +122,7 @@ public class Hunter extends GoalAgent
 	public KnowledgeBase getKnowledgeBase() { return KB; }
 	
 	@Override
-	protected Goal formulateGoalFunction(Belief belief) 
-	{
+	protected Goal formulateGoalFunction(Belief belief) {
 		Room room = (Room) belief;
 		
 		/*
@@ -138,9 +131,11 @@ public class Hunter extends GoalAgent
 		}
 		*/
 		
+		/*
 		if( !tour.isComplete() ) {
 			return tour;
 		}
+		*/
 				
 		if( gold < 1 || room.isGlitter() ) {
 			return getGold;
@@ -155,9 +150,11 @@ public class Hunter extends GoalAgent
 	@Override
 	protected Plan planning(Goal goal) 
 	{	
+		/*
 		if( goal.getName().equals("MakeTheTour") ) {
 			return ((MakeTheTour)goal).toDo();
 		}
+		*/
 		
 		if( goal.getName().equals("GetTheGold") ) {	
 			return ((GetTheGold) goal).toDo(); 
@@ -175,25 +172,23 @@ public class Hunter extends GoalAgent
 	}
 
 	@Override
-	protected Belief nextFunction(Belief belief) 
-	{
+	protected Belief nextFunction(Belief belief) {
 		Room room = (Room) belief;
 		KB.updateKnowledgeBase(room);
 		return room;
 	}
 	
 	@Override
-	protected void setup() 
-	{
-		for( AgentRole role : getAllAgentRoles().values() )
+	protected void setup() {
+		for( AgentRole role : getAllAgentRoles().values() ) {
 			role.initializeNorm();
+		}
 		
 		addBehaviour( new Perception(this, 1000) );
 	}
 	
 	@Override
-	protected List<Plan> successorFunction(Belief belief) 
-	{
+	protected List<Plan> successorFunction(Belief belief) {
 		List<Plan> plans = new ArrayList<Plan>();
 		
 		Room room = (Room) belief;
@@ -210,19 +205,16 @@ public class Hunter extends GoalAgent
 		return plans;
 	}
 	
-	private class Perception extends Sensor
-	{
+	private class Perception extends Sensor {
 		private Hunter agent;
 		
-		private Perception(Hunter agent, int time)
-		{
+		private Perception(Hunter agent, int time) {
 			super(agent, time);
 			this.agent = agent;
 		}
 		
 		@Override
-		protected void onTick()
-		{
+		protected void onTick() {
 			Room room = agent.getKnowledgeBase().getCurrentRoom();
 			
 			if( room.isWumpus() || room.isPit() ) {

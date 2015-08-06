@@ -91,11 +91,6 @@ public class WumpusLabyrinth extends Environment
 		addAgent("Hunter", hunter);
 	}
 	
-	public Game getGame() {
-		return game;
-	}
-	
-	public Maze getMaze() {
-		return maze;
-	}
+	public Game getGame() { return game; }
+	public Maze getMaze() {	return maze; }
 }

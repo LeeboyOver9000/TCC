@@ -16,8 +16,7 @@ public class GetTheGold extends Goal
 	private Hunter agent;
 	private Random random; 
 	
-	public GetTheGold(Hunter agent, Random random)
-	{
+	public GetTheGold(Hunter agent, Random random) {
 		setName("GetTheGold");
 		this.agent = agent;
 		this.random = random;
@@ -30,11 +29,10 @@ public class GetTheGold extends Goal
 		
 		if( agent.getKnowledgeBase().getCurrentRoom().isGlitter() ) {
 			plan.addAction( agent.getAction("Grab") );
-		}
-		else
-		{
+		} else {
 			Room currentRoom = agent.getKnowledgeBase().getCurrentRoom();
 			Coordinate coordinate = Path.getNextRoomBFS(agent);
+			System.out.println(coordinate); //FIXME
 			
 			if( Path.thereIsSafePlaceToGo(agent) && coordinate != null )
 			{	

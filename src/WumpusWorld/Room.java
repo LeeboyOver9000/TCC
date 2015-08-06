@@ -19,14 +19,12 @@ public class Room extends Belief implements Comparable<Room>
 	private Room roomLeft = null;
 	private Room roomRight = null;
 	
-	public Room(int x, int y)
-	{
+	public Room(int x, int y) {
 		setName("Room[" + x + "][" + y + "]");
 		coordinate = new Coordinate(x, y);
 	}
 	
-	public Room(Room room)
-	{
+	public Room(Room room) {
 		setName( room.getName() );
 		coordinate.setX( room.getCoordinate().getX() );
 		coordinate.setY( room.getCoordinate().getY() );
@@ -39,89 +37,29 @@ public class Room extends Belief implements Comparable<Room>
 		setGlitter( room.isGlitter() );
 	}
 	
-	public boolean isPit() {
-		return pit;
-	}
+	public boolean isPit() { return pit; }
+	public void setPit(boolean pit) { this.pit = pit; }
+	public boolean isGold() { return gold; }
+	public void setGold(boolean gold) { this.gold = gold; }
+	public boolean isWumpus() { return wumpus; }
+	public void setWumpus(boolean wumpus) { this.wumpus = wumpus; }
+	public boolean isStench() { return stench; }
+	public void setStench(boolean stench) { this.stench = stench; }
+	public boolean isBreeze() { return breeze; }
+	public void setBreeze(boolean breeze) { this.breeze = breeze; }
+	public boolean isGlitter() { return glitter; }
+	public void setGlitter(boolean glitter) { this.glitter = glitter; }
 	
-	public void setPit(boolean pit) {
-		this.pit = pit;
-	}
+	public Coordinate getCoordinate() { return coordinate; }
 	
-	public boolean isGold() {
-		return gold;
-	}
-	
-	public void setGold(boolean gold) {
-		this.gold = gold;
-	}
-	
-	public boolean isWumpus() {
-		return wumpus;
-	}
-	
-	public void setWumpus(boolean wumpus) {
-		this.wumpus = wumpus;
-	}
-	
-	public boolean isStench() {
-		return stench;
-	}
-	
-	public void setStench(boolean stench) {
-		this.stench = stench;
-	}
-	
-	public boolean isBreeze() {
-		return breeze;
-	}
-	
-	public void setBreeze(boolean breeze) {
-		this.breeze = breeze;
-	}
-	
-	public boolean isGlitter() {
-		return glitter;
-	}
-	
-	public void setGlitter(boolean glitter) {
-		this.glitter = glitter;
-	}
-	
-	public Coordinate getCoordinate() {
-		return coordinate;
-	}
-	
-	public Room getRoomUp() {
-		return roomUp;
-	}
-
-	public void setRoomUp(Room roomUp) {
-		this.roomUp = roomUp;
-	}
-
-	public Room getRoomDown() {
-		return roomDown;
-	}
-
-	public void setRoomDown(Room roomDown) {
-		this.roomDown = roomDown;
-	}
-
-	public Room getRoomLeft() {
-		return roomLeft;
-	}
-
-	public void setRoomLeft(Room roomLeft) {
-		this.roomLeft = roomLeft;
-	}
-
-	public Room getRoomRight() {
-		return roomRight;
-	}
-
-	public void setRoomRight(Room roomRight) {
-		this.roomRight = roomRight;
-	}
+	public Room getRoomUp() { return roomUp; }
+	public void setRoomUp(Room roomUp) { this.roomUp = roomUp; }
+	public Room getRoomDown() { return roomDown; }
+	public void setRoomDown(Room roomDown) { this.roomDown = roomDown; }
+	public Room getRoomLeft() { return roomLeft; }
+	public void setRoomLeft(Room roomLeft) { this.roomLeft = roomLeft; }
+	public Room getRoomRight() { return roomRight; }
+	public void setRoomRight(Room roomRight) { this.roomRight = roomRight; }
 
 	public boolean isFree()
 	{

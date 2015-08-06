@@ -42,118 +42,36 @@ public abstract class AgentRole
 		}
 	}
 	
-	public void setName(String name)
-	{
-		this.name = name;
-	}
+	public void setName(String name) { this.name = name; }
+	public String getName() { return name; }
 	
-	public String getName()
-	{
-		return name;
-	}
+	public void setOwner( Organization owner ) { this.owner = owner; }
+	public Organization getOwner() { return owner; }
 	
-	public void setOwner( Organization owner )
-	{
-		this.owner = owner;
-	}
-	
-	public Organization getOwner()
-	{
-		return owner;
-	}
-	
-	public void setPlayer(GenericAgent player)
-	{
-		this.player = player;
-	}
-	
-	public GenericAgent getPlayer()
-	{
-		return player;
-	}
+	public void setPlayer(GenericAgent player) { this.player = player; }
+	public GenericAgent getPlayer() { return player; }
 	
 	// Beliefs
-	public Belief getBelief(String key) 
-	{
-		return beliefs.get(key);
-	}
-	
-	public void addBelief(String key, Belief belief) 
-	{		
-		beliefs.put(key, belief);
-	}
-	
-	public Belief removeBelief(String key) 
-	{
-		return beliefs.remove(key);
-	}
-	
-	public void removeAllBeliefs() 
-	{
-		beliefs.clear();
-	}
-	
-	public Hashtable<String, Belief> getAllBeliefs() 
-	{
-		return beliefs;
-	}
+	public Belief getBelief(String key) { return beliefs.get(key); }
+	public void addBelief(String key, Belief belief) { beliefs.put(key, belief); }
+	public Belief removeBelief(String key) { return beliefs.remove(key); }
+	public void removeAllBeliefs() { beliefs.clear(); }
+	public Hashtable<String, Belief> getAllBeliefs() { return beliefs; }
 	
 	// Actions
-	public Action getAction(String key) 
-	{
-		return actions.get(key);
-	}
-	
-	public void addAction(String key, Action action) 
-	{
-		actions.put(key, action);
-	}
-	
-	public Action removeAction(String key) 
-	{
-		return actions.remove(key);
-	}
-	
-	public void removeAllActions() 
-	{
-		actions.clear();
-	}
-	
-	public Hashtable<String, Action> getAllActions() 
-	{
-		return actions;
-	}
-	
-	public boolean containAction(String key)
-	{
-		return actions.containsKey(key);
-	}
+	public Action getAction(String key) { return actions.get(key); }
+	public void addAction(String key, Action action) { actions.put(key, action); }
+	public Action removeAction(String key) { return actions.remove(key); }
+	public void removeAllActions() { actions.clear();}
+	public Hashtable<String, Action> getAllActions() { return actions; }
+	public boolean containAction(String key) { return actions.containsKey(key); }
 
 	// Restricts Norms
-	protected Norm getRestrictNorm(String key) 
-	{
-		return restrictNorms.get(key);
-	}
-
-	public void addRestrictNorm(String key, Norm restrictNorm) 
-	{
-		restrictNorms.put(key, restrictNorm);
-	}
-
-	public Norm removeRestrictNorm(String key) 
-	{
-		return restrictNorms.remove(key);
-	}
-
-	protected void removeAllRestrictNorms() 
-	{
-		restrictNorms.clear();
-	}
-
-	protected Hashtable<String, Norm> getAllRestrictNorms() 
-	{
-		return restrictNorms;
-	}
+	protected Norm getRestrictNorm(String key) { return restrictNorms.get(key); }
+	public void addRestrictNorm(String key, Norm restrictNorm) { restrictNorms.put(key, restrictNorm); }
+	public Norm removeRestrictNorm(String key) { return restrictNorms.remove(key); }
+	protected void removeAllRestrictNorms() { restrictNorms.clear(); }
+	protected Hashtable<String, Norm> getAllRestrictNorms() { return restrictNorms; }
 	
 	protected abstract void checkingNorms();
 	public abstract void initializeNorm();

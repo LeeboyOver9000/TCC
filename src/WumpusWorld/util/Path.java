@@ -12,10 +12,8 @@ import WumpusWorld.agents.Hunter;
 
 public class Path 
 {	
-	public static void addNextNode(Room room, Room nextRoom, Direction direction)
-	{
-		if( nextRoom != null )
-		{
+	public static void addNextNode(Room room, Room nextRoom, Direction direction) {
+		if( nextRoom != null ) {
 			if( direction == Direction.NORTH && room.getRoomUp() == null ) {
 				room.setRoomUp(nextRoom);
 			}
@@ -34,15 +32,13 @@ public class Path
 		}
 	}
 	
-	public static void goBack(Hunter agent, Plan plan)
-	{
+	public static void goBack(Hunter agent, Plan plan) {
 		plan.addAction( agent.getKeyAction("TurnLeft") );
 		plan.addAction( agent.getKeyAction("TurnLeft") );
 		plan.addAction( agent.getKeyAction("Forward") );
 	}
 	
-	public static boolean thereIsSafePlaceToGo(Hunter agent)
-	{
+	public static boolean thereIsSafePlaceToGo(Hunter agent) {
 		int size = agent.getKnowledgeBase().getMazeSize();
 		
 		for(int i = 0 ; i < size ; i++)
@@ -53,12 +49,9 @@ public class Path
 		return false;
 	}
 	
-	public static void moveTo(Hunter agent, Direction direction, Plan plan)
-	{
-		if( direction != agent.getDirection() )
-		{
-			if( agent.getDirection() == Direction.NORTH )
-			{
+	public static void moveTo(Hunter agent, Direction direction, Plan plan) {
+		if( direction != agent.getDirection() ) {
+			if( agent.getDirection() == Direction.NORTH ) {
 				if( direction == Direction.EAST ) {
 					plan.addAction( agent.getKeyAction("TurnRight") );
 				}
@@ -132,27 +125,27 @@ public class Path
 		Queue<Room> queue = new LinkedList<Room>();
 		
     	int size = agent.getKnowledgeBase().getMazeSize();
-    	boolean[][] visited = new boolean[size][size];
+    	boolean[][] verified = new boolean[size][size];
     	
     	for( int i = 0 ; i < size ; i++)
     		for(int j = 0 ; j < size ; j++)
-    			visited[i][j] = false;
+    			verified[i][j] = false;
 		
 		queue.add( agent.getKnowledgeBase().getCurrentRoom() );
 		
-		while( !queue.isEmpty() )
-		{
+		while( !queue.isEmpty() ) {
 			Room temp = queue.poll();
-			visited[temp.getCoordinate().getX()][temp.getCoordinate().getY()] = true;
+			verified[temp.getCoordinate().getX()][temp.getCoordinate().getY()] = true;
 			
 			List<Coordinate> safeCoordinates = agent.getKnowledgeBase().getNextSafesCoordinates(temp);
 			
-			for(Coordinate safe : safeCoordinates)
-			{
+			for(Coordinate safe : safeCoordinates) {
 				int x = safe.getX();
 				int y = safe.getY();
 				
-				if( !agent.getKnowledgeBase().isVisited(x, y)) {
+				if( !agent.getKnowledgeBase().isVisited(x, y) && 
+					x != agent.getKnowledgeBase().getCurrentRoom().getCoordinate().getX() &&
+					y != agent.getKnowledgeBase().getCurrentRoom().getCoordinate().getY()) {
 					return safe;
 				}
 			}
@@ -160,22 +153,22 @@ public class Path
 			for(int i = 0 ; i < 4 ; i++)
 			{
 				Room up = temp.getRoomUp();
-				if(up != null && !visited[up.getCoordinate().getX()][up.getCoordinate().getY()] ) {
+				if(up != null && !verified[up.getCoordinate().getX()][up.getCoordinate().getY()] ) {
 					queue.add(up);
 				}
 				
 				Room right = temp.getRoomRight();
-				if( right != null && !visited[right.getCoordinate().getX()][right.getCoordinate().getY()] ) {
+				if( right != null && !verified[right.getCoordinate().getX()][right.getCoordinate().getY()] ) {
 					queue.add(right);
 				}
 				
 				Room left = temp.getRoomLeft();
-				if( left != null && !visited[left.getCoordinate().getX()][left.getCoordinate().getY()] ) {
+				if( left != null && !verified[left.getCoordinate().getX()][left.getCoordinate().getY()] ) {
 					queue.add(left);
 				}
 				
 				Room down = temp.getRoomDown();
-				if( down != null && !visited[down.getCoordinate().getX()][down.getCoordinate().getY()] ) {
+				if( down != null && !verified[down.getCoordinate().getX()][down.getCoordinate().getY()] ) {
 					queue.add(down);
 				}
 			}

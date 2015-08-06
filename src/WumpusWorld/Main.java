@@ -11,15 +11,11 @@ import jade.wrapper.AgentContainer;
 import jade.wrapper.AgentController;
 import jade.wrapper.ControllerException;
 
-public class Main 
-{
-	public static void main(String[] args)
-	{
-		SwingUtilities.invokeLater(new Runnable() 
-		{
+public class Main {
+	public static void main(String[] args) {
+		SwingUtilities.invokeLater(new Runnable() {
 			@Override
-			public void run() 
-			{
+			public void run() {
 				MainWindow s = new MainWindow();
 				s.setVisible(true);
 			}
