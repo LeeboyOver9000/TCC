@@ -1,0 +1,15 @@
+package WumpusWorld.util;
+
+public enum State 
+{	
+	PIT_WUMPUS_QUESTION,
+	
+	PIT_QUESTION,
+	PIT_AFFIRMATION,
+	
+	WUMPUS_QUESTION,
+	WUMPUS_AFFIRMATION,
+	
+	SAFE_SQUARE,
+	BLACK_AQUARE;
+}
