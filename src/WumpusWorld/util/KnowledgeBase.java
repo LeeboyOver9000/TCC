@@ -224,15 +224,13 @@ public class KnowledgeBase
 						}
 					}
 					
-					if( !isVisited(x, y-1) )
-					{
+					if( !isVisited(x, y-1) ) {
 						if( inferenceWUMPUS(x, y-1) ) {
 							wumpus[x][y-1] = true;
 						}
 					}
 					
-					if( !isVisited(x, y+1) ) 
-					{
+					if( !isVisited(x, y+1) ) {
 						if( inferenceWUMPUS(x, y+1) ) {
 							wumpus[x][y+1] = true;
 						}
@@ -257,34 +255,7 @@ public class KnowledgeBase
 
 	private boolean inferencePIT(int x, int y)
 	{	
-		if( x != 0 && y != 0 && x != getMazeSize()-1 && y != getMazeSize()-1 )
-		{
-			/*
-			if( isVisited(x-1, y) && isBreeze(x-1, y) &&
-				isVisited(x+1, y) && isBreeze(x+1, y) &&
-				isVisited(x, y-1) && isBreeze(x, y-1) ){
-				return true;
-			}
-					
-			if( isVisited(x-1, y) && isBreeze(x-1, y) && 
-				isVisited(x+1, y) && isBreeze(x+1, y) &&
-				isVisited(x, y+1) && isBreeze(x, y+1) ) {
-				return true;
-			}
-					
-			if( isVisited(x, y-1) && isBreeze(x, y-1) && 
-				isVisited(x-1, y) && isBreeze(x-1, y) &&
-				isVisited(x, y+1) && isBreeze(x, y+1) ) {
-				return true;
-			}
-					
-			if( isVisited(x, y-1) && isBreeze(x, y-1) && 
-				isVisited(x+1, y) && isBreeze(x+1, y) &&
-				isVisited(x, y+1) && isBreeze(x, y+1) ) {
-				return true;
-			}
-			*/
-			
+		if( x != 0 && y != 0 && x != getMazeSize()-1 && y != getMazeSize()-1 ) {
 			if( isVisited(x-1, y) && isBreeze(x-1, y) && 
 				isVisited(x+1, y) && isBreeze(x+1, y) &&
 				isVisited(x, y-1) && isBreeze(x, y-1) && 
@@ -298,32 +269,6 @@ public class KnowledgeBase
 	
 	private boolean inferenceWUMPUS(int x, int y) {
 		if( x != 0 && y != 0 && x != getMazeSize()-1 && y != getMazeSize()-1 ) {
-			/*
-			if( isVisited(x-1, y) && isStench(x-1, y) && 
-				isVisited(x+1, y) && isStench(x+1, y) &&
-				isVisited(x, y-1) && isStench(x, y-1) ){
-				return true;
-			}
-					
-			if( isVisited(x-1, y) && isStench(x-1, y) && 
-				isVisited(x+1, y) && isStench(x+1, y) &&
-				isVisited(x, y+1) && isStench(x, y+1) ) {
-				return true;
-			}
-						
-			if( isVisited(x, y-1) && isStench(x, y-1) && 
-				isVisited(x-1, y) && isStench(x-1, y) &&
-				isVisited(x, y+1) && isStench(x, y+1) ) {
-				return true;
-			}
-						
-			if( isVisited(x, y-1) && isStench(x, y-1) && 
-				isVisited(x+1, y) && isStench(x+1, y) &&
-				isVisited(x, y+1) && isStench(x, y+1) ) {
-				return true;
-			}
-			*/
-			
 			if( isVisited(x-1, y) && isStench(x-1, y) && 
 				isVisited(x+1, y) && isStench(x+1, y) &&
 				isVisited(x, y-1) && isStench(x, y-1) && 
@@ -340,13 +285,17 @@ public class KnowledgeBase
 			boolean freePit = false;
 			boolean freeWumpus = false;
 			
-			if( (isVisited(x-1, y) && !isBreeze(x-1, y)) || (isVisited(x+1, y) && !isBreeze(x+1, y))
-					|| (isVisited(x, y-1) && !isBreeze(x, y-1)) || (isVisited(x, y+1) && !isBreeze(x, y+1)) ) {
+			if( (isVisited(x-1, y) && !isBreeze(x-1, y)) && 
+				(isVisited(x+1, y) && !isBreeze(x+1, y)) &&
+				(isVisited(x, y-1) && !isBreeze(x, y-1)) && 
+				(isVisited(x, y+1) && !isBreeze(x, y+1)) ) {
 				freePit = true;
 			}
 				
-			if( (isVisited(x-1, y) && !isStench(x-1, y)) || (isVisited(x+1, y) && !isStench(x+1, y)) 
-					|| (isVisited(x, y-1) && !isStench(x, y-1)) || (isVisited(x, y+1) && !isStench(x, y+1)) ) {
+			if( (isVisited(x-1, y) && !isStench(x-1, y)) && 
+				(isVisited(x+1, y) && !isStench(x+1, y)) && 
+				(isVisited(x, y-1) && !isStench(x, y-1)) && 
+				(isVisited(x, y+1) && !isStench(x, y+1)) ) {
 				freeWumpus = true;
 			}
 				

@@ -138,14 +138,13 @@ public class Path
 			verified[temp.getCoordinate().getX()][temp.getCoordinate().getY()] = true;
 			
 			List<Coordinate> safeCoordinates = agent.getKnowledgeBase().getNextSafesCoordinates(temp);
+			System.out.println(safeCoordinates);//FIXME
 			
 			for(Coordinate safe : safeCoordinates) {
 				int x = safe.getX();
 				int y = safe.getY();
 				
-				if( !agent.getKnowledgeBase().isVisited(x, y) && 
-					x != agent.getKnowledgeBase().getCurrentRoom().getCoordinate().getX() &&
-					y != agent.getKnowledgeBase().getCurrentRoom().getCoordinate().getY()) {
+				if( !agent.getKnowledgeBase().isVisited(x, y) ) {//FIXME
 					return safe;
 				}
 			}

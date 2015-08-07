@@ -32,7 +32,7 @@ public class GetTheGold extends Goal
 		} else {
 			Room currentRoom = agent.getKnowledgeBase().getCurrentRoom();
 			Coordinate coordinate = Path.getNextRoomBFS(agent);
-			System.out.println(coordinate); //FIXME
+			System.out.println(coordinate);//FIXME
 			
 			if( Path.thereIsSafePlaceToGo(agent) && coordinate != null )
 			{	
@@ -143,9 +143,7 @@ public class GetTheGold extends Goal
 				{
 					if( agent.getKnowledgeBase().isSafeMove(currentRoom, Direction.NORTH) ) {
 						Path.moveTo(agent, Direction.NORTH, plan);
-					}
-					else
-					{
+					} else {
 						if( agent.getKnowledgeBase().isSafeMove(currentRoom, Direction.WEST) || agent.getKnowledgeBase().isSafeMove(currentRoom, Direction.EAST) )
 						{
 							if( agent.getKnowledgeBase().isSafeMove(currentRoom, Direction.WEST) && agent.getKnowledgeBase().isSafeMove(currentRoom, Direction.EAST) )

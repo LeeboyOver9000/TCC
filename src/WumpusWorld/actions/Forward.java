@@ -22,7 +22,7 @@ public class Forward extends Action
 	public Forward(Hunter agent)
 	{
 		super("Forward");
-		if( agent != null)
+		if( agent != null )
 		{
 			this.agent = agent;
 			
