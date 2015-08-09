@@ -14,16 +14,9 @@ public class Forward extends Action
 	private int size;
 	private Hunter agent;
 	
-	public Forward()
-	{
-		this(null);
-	}
-	
-	public Forward(Hunter agent)
-	{
+	public Forward(Hunter agent) {
 		super("Forward");
-		if( agent != null )
-		{
+		if( agent != null ) {
 			this.agent = agent;
 			
 			x = agent.getKnowledgeBase().getCurrentRoom().getCoordinate().getX();
@@ -36,6 +29,7 @@ public class Forward extends Action
 	public void execute() 
 	{
 		Maze maze = agent.getMaze();
+		//Room previousRoom = agent.getKnowledgeBase().getCurrentRoom();
 		
 		x = agent.getKnowledgeBase().getCurrentRoom().getCoordinate().getX();
 		y = agent.getKnowledgeBase().getCurrentRoom().getCoordinate().getY();

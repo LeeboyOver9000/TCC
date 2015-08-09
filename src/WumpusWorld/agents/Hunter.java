@@ -53,7 +53,8 @@ public class Hunter extends GoalAgent
 	private Grab grab;
 	private Climb climb; 
 	
-	private Random random = new Random( System.currentTimeMillis() ); 
+	private List<Room> roomToGo = new ArrayList<Room>();
+	private Random random = new Random( System.currentTimeMillis() );
 	
 	public Hunter(String name, WumpusLabyrinth environment, AgentRole agentRole, Maze maze, Room initialRoom, Direction LookAt)
 	{
@@ -62,15 +63,13 @@ public class Hunter extends GoalAgent
 		this.maze = maze;
 		this.aimAt = LookAt;
 		
-		KB = new KnowledgeBase( initialRoom, maze.getMazeSize(), random );
+		KB = new KnowledgeBase(this, initialRoom, maze.getMazeSize(), random );
 		
-		// Goals
-		//tour = new MakeTheTour(this);		
+		// Goals	
 		leaveCave = new LeaveTheCave(this, random);
 		killWumpus = new KillTheWumpus(this);
 		getGold = new GetTheGold(this, random);
 		
-		//addGoal(tour.getName(), tour);
 		addGoal(leaveCave.getName(), leaveCave);
 		addGoal(killWumpus.getName(), killWumpus);
 		addGoal(getGold.getName(), getGold);
@@ -119,6 +118,7 @@ public class Hunter extends GoalAgent
 	public int getAmountGold() { return gold; }
 	public void setAmountGold(int gold) { this.gold = gold; }
 
+	public List<Room> getRoomToGo() { return roomToGo; }
 	public KnowledgeBase getKnowledgeBase() { return KB; }
 	
 	@Override
@@ -128,12 +128,6 @@ public class Hunter extends GoalAgent
 		/*
 		if( room.isStench() && arrow > 0 && !room.isGlitter() ) {
 			return killWumpus;
-		}
-		*/
-		
-		/*
-		if( !tour.isComplete() ) {
-			return tour;
 		}
 		*/
 				
@@ -150,12 +144,6 @@ public class Hunter extends GoalAgent
 	@Override
 	protected Plan planning(Goal goal) 
 	{	
-		/*
-		if( goal.getName().equals("MakeTheTour") ) {
-			return ((MakeTheTour)goal).toDo();
-		}
-		*/
-		
 		if( goal.getName().equals("GetTheGold") ) {	
 			return ((GetTheGold) goal).toDo(); 
 		}
@@ -227,7 +215,7 @@ public class Hunter extends GoalAgent
 			//normProcessBelief(room); // Make norm process on belief
 			
 			Goal goal = formulateGoalFunction(room); // Formulate the goal
-			//goal = normProcessGoal(goal); // Make norm process on belief 
+			//goal = normProcessGoal(goal); // Make norm process on belief
 			
 			if( goal != null ) { // if the goal is null, there aren't goals allowed
 				Plan plan = planning(goal);

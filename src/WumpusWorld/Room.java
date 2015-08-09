@@ -4,6 +4,7 @@ import jamder.structural.Belief;
 
 public class Room extends Belief implements Comparable<Room>
 {
+	private boolean flag;
 	private Coordinate coordinate;
 	
 	private boolean pit;
@@ -50,6 +51,9 @@ public class Room extends Belief implements Comparable<Room>
 	public boolean isGlitter() { return glitter; }
 	public void setGlitter(boolean glitter) { this.glitter = glitter; }
 	
+	
+	public boolean getFlag() { return flag; }
+	public void setFlag(boolean flag) { this.flag = flag; }
 	public Coordinate getCoordinate() { return coordinate; }
 	
 	public Room getRoomUp() { return roomUp; }

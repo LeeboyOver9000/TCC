@@ -6,14 +6,17 @@ import java.util.Random;
 
 import WumpusWorld.Coordinate;
 import WumpusWorld.Room;
+import WumpusWorld.agents.Hunter;
 
 public class KnowledgeBase 
 {
 	private Room initialRoom;
 	private Room currentRoom;
+	private Room previousRoom;
 	
 	private int maze_size;
 	private Random random;
+	private Hunter agent;
 	
 	private boolean[][] visited;
     private boolean[][] smell;
@@ -23,10 +26,11 @@ public class KnowledgeBase
     private boolean[][] wumpus;
     private boolean[][] pits;
 	
-	public KnowledgeBase(Room room, int size, Random random)
+	public KnowledgeBase(Hunter agent, Room room, int size, Random random)
 	{
 		maze_size = size;
 		this.random = random;
+		this.agent = agent;
 		
 		visited = new boolean[maze_size][maze_size];
 		smell = new boolean[maze_size][maze_size];
@@ -36,7 +40,7 @@ public class KnowledgeBase
 		wumpus = new boolean[maze_size][maze_size];
 		pits = new boolean[maze_size][maze_size];
 		
-		initialRoom = currentRoom = room;
+		initialRoom = previousRoom = currentRoom = room;
 		
 		for(int i = 0 ; i < maze_size ; i++)
 		{
@@ -61,6 +65,8 @@ public class KnowledgeBase
 	public Room getInitialRoom() { return initialRoom; }
 	public Room getCurrentRoom() { return currentRoom; }
 	public void setCurrentRoom(Room currentRoom) { this.currentRoom = currentRoom; }
+	public Room getPreviousRoom() { return previousRoom; }
+	public void setPreviousRoom(Room previousRoom) { this.previousRoom = previousRoom; }
 	
 	public boolean isVisited(int x, int y) { return visited[x][y]; }	
 	public void setVisited(boolean value, int x, int y)	{ visited[x][y] = value; }
@@ -92,43 +98,72 @@ public class KnowledgeBase
 				if( y == 0 ) {
 					safe[x+1][y] = true;
 					safe[x][y+1] = true;
+					
+					Path.addNextNode(currentRoom, agent.getMaze().getRoom(x+1, y), Direction.EAST);
+					Path.addNextNode(currentRoom, agent.getMaze().getRoom(x, y+1), Direction.SOUTH);
 				} else if( y == maze_size-1 ) {
 					safe[x+1][y] = true;
 					safe[x][y-1] = true;
+					
+					Path.addNextNode(currentRoom, agent.getMaze().getRoom(x+1, y), Direction.EAST);
+					Path.addNextNode(currentRoom, agent.getMaze().getRoom(x-1, y-1), Direction.NORTH);
 				} else {
 					safe[x+1][y] = true;
 					safe[x][y-1] = true;
 					safe[x][y+1] = true;
+					
+					Path.addNextNode(currentRoom, agent.getMaze().getRoom(x+1, y), Direction.EAST);
+					Path.addNextNode(currentRoom, agent.getMaze().getRoom(x, y-1), Direction.NORTH);
+					Path.addNextNode(currentRoom, agent.getMaze().getRoom(x, y+1), Direction.SOUTH);
 				}
-			}
-			else if( x == maze_size-1 ) {
+			} else if( x == maze_size-1 ) {
 				if( y == 0 ) {
 					safe[x-1][y] = true;
 					safe[x][y+1] = true;
+					
+					Path.addNextNode(currentRoom, agent.getMaze().getRoom(x-1, y), Direction.WEST);
+					Path.addNextNode(currentRoom, agent.getMaze().getRoom(x, y+1), Direction.SOUTH);
 				} else if( y == maze_size-1 ) {
 					safe[x-1][y] = true;
 					safe[x][y-1] = true;
+					
+					Path.addNextNode(currentRoom, agent.getMaze().getRoom(x-1, y), Direction.WEST);
+					Path.addNextNode(currentRoom, agent.getMaze().getRoom(x, y-1), Direction.NORTH);
 				} else {
 					safe[x-1][y] = true;
 					safe[x][y-1] = true;
 					safe[x][y+1] = true;
+					
+					Path.addNextNode(currentRoom, agent.getMaze().getRoom(x-1, y), Direction.WEST);
+					Path.addNextNode(currentRoom, agent.getMaze().getRoom(x, y-1), Direction.NORTH);
+					Path.addNextNode(currentRoom, agent.getMaze().getRoom(x, y+1), Direction.SOUTH);
 				}
-			}
-			else if( y == 0 ) {
+			} else if( y == 0 ) {
 				safe[x-1][y] = true;
 				safe[x+1][y] = true;
 				safe[x][y+1] = true;
-			}
-			else if( y == maze_size-1 ) {
+				
+				Path.addNextNode(currentRoom, agent.getMaze().getRoom(x-1, y), Direction.WEST);
+				Path.addNextNode(currentRoom, agent.getMaze().getRoom(x+1, y), Direction.EAST);
+				Path.addNextNode(currentRoom, agent.getMaze().getRoom(x, y+1), Direction.SOUTH);
+			} else if( y == maze_size-1 ) {
 				safe[x-1][y] = true;
 				safe[x+1][y] = true;
 				safe[x][y-1] = true;
-			}
-			else {
+				
+				Path.addNextNode(currentRoom, agent.getMaze().getRoom(x-1, y), Direction.WEST);
+				Path.addNextNode(currentRoom, agent.getMaze().getRoom(x+1, y), Direction.EAST);
+				Path.addNextNode(currentRoom, agent.getMaze().getRoom(x, y-1), Direction.NORTH);
+			} else {
 				safe[x+1][y] = true;
 				safe[x-1][y] = true;
 				safe[x][y-1] = true;
 				safe[x][y+1] = true;
+				
+				Path.addNextNode(currentRoom, agent.getMaze().getRoom(x+1, y), Direction.EAST);
+				Path.addNextNode(currentRoom, agent.getMaze().getRoom(x+1, y), Direction.WEST);
+				Path.addNextNode(currentRoom, agent.getMaze().getRoom(x, y-1), Direction.NORTH);
+				Path.addNextNode(currentRoom, agent.getMaze().getRoom(x, y+1), Direction.SOUTH);
 			}
 		} else {
 			if( room.isBreeze() ) {
@@ -138,18 +173,30 @@ public class KnowledgeBase
 					pits[x+1][y] = true;
 					safe[x][y-1] = true;
 					safe[x][y+1] = true;
+					
+					Path.addNextNode(currentRoom, agent.getMaze().getRoom(x, y-1), Direction.NORTH);
+					Path.addNextNode(currentRoom, agent.getMaze().getRoom(x, y+1), Direction.SOUTH);
 				} else if( x == maze_size-1 ) {
 					pits[x-1][y] = true;
 					safe[x][y-1] = true;
 					safe[x][y+1] = true;
+					
+					Path.addNextNode(currentRoom, agent.getMaze().getRoom(x, y-1), Direction.NORTH);
+					Path.addNextNode(currentRoom, agent.getMaze().getRoom(x, y+1), Direction.SOUTH);
 				} else if( y == 0 ) {
 					safe[x-1][y] = true;
 					safe[x+1][y] = true;
 					pits[x][y+1] = true;
+					
+					Path.addNextNode(currentRoom, agent.getMaze().getRoom(x-1, y), Direction.WEST);
+					Path.addNextNode(currentRoom, agent.getMaze().getRoom(x+1, y), Direction.EAST);
 				} else if( y == maze_size-1 ) {
 					safe[x-1][y] = true;
 					safe[x+1][y] = true;
 					pits[x][y-1] = true;
+					
+					Path.addNextNode(currentRoom, agent.getMaze().getRoom(x-1, y), Direction.WEST);
+					Path.addNextNode(currentRoom, agent.getMaze().getRoom(x+1, y), Direction.EAST);
 				} else {
 					if( !isVisited(x-1, y) ) {
 						if( inferencePIT(x-1, y) ) {
@@ -237,15 +284,19 @@ public class KnowledgeBase
 					}
 					
 					if( !isVisited(x-1, y) && inferenceSAFE(x-1, y) ) {
+						Path.addNextNode(currentRoom, agent.getMaze().getRoom(x-1, y), Direction.WEST);
 						safe[x-1][y] = true;
 					}
 					if( !isVisited(x+1, y) && inferenceSAFE(x+1, y) ) {
+						Path.addNextNode(currentRoom, agent.getMaze().getRoom(x+1, y), Direction.EAST);
 						safe[x+1][y] = true;
 					}
 					if( !isVisited(x, y-1) && inferenceSAFE(x, y-1) ) {
+						Path.addNextNode(currentRoom, agent.getMaze().getRoom(x, y-1), Direction.NORTH);
 						safe[x][y-1] = true;
 					}
 					if( !isVisited(x, y+1) && inferenceSAFE(x, y+1) ) {
+						Path.addNextNode(currentRoom, agent.getMaze().getRoom(x, y+1), Direction.SOUTH);
 						safe[x][y+1] = true;
 					}
 				}
@@ -253,8 +304,7 @@ public class KnowledgeBase
 		}
 	}
 
-	private boolean inferencePIT(int x, int y)
-	{	
+	private boolean inferencePIT(int x, int y){	
 		if( x != 0 && y != 0 && x != getMazeSize()-1 && y != getMazeSize()-1 ) {
 			if( isVisited(x-1, y) && isBreeze(x-1, y) && 
 				isVisited(x+1, y) && isBreeze(x+1, y) &&
@@ -285,22 +335,23 @@ public class KnowledgeBase
 			boolean freePit = false;
 			boolean freeWumpus = false;
 			
-			if( (isVisited(x-1, y) && !isBreeze(x-1, y)) && 
-				(isVisited(x+1, y) && !isBreeze(x+1, y)) &&
-				(isVisited(x, y-1) && !isBreeze(x, y-1)) && 
+			if( (isVisited(x-1, y) && !isBreeze(x-1, y)) || 
+				(isVisited(x+1, y) && !isBreeze(x+1, y)) ||
+				(isVisited(x, y-1) && !isBreeze(x, y-1)) || 
 				(isVisited(x, y+1) && !isBreeze(x, y+1)) ) {
 				freePit = true;
 			}
 				
-			if( (isVisited(x-1, y) && !isStench(x-1, y)) && 
-				(isVisited(x+1, y) && !isStench(x+1, y)) && 
-				(isVisited(x, y-1) && !isStench(x, y-1)) && 
+			if( (isVisited(x-1, y) && !isStench(x-1, y)) || 
+				(isVisited(x+1, y) && !isStench(x+1, y)) || 
+				(isVisited(x, y-1) && !isStench(x, y-1)) || 
 				(isVisited(x, y+1) && !isStench(x, y+1)) ) {
 				freeWumpus = true;
 			}
 				
-			if( freePit && freeWumpus )
+			if( freePit && freeWumpus ) {
 				return true;
+			}
 			
 			return false;
 		}
