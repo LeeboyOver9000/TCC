@@ -20,8 +20,7 @@ public class Saloon extends Environment
 		refrigerator = new Refrigerator("Refrigerator", 8);
 		addObject(refrigerator.getName(), refrigerator);
 		
-		for(int i = 1; i <= refrigerator.getCapacity() ; i += 2)
-		{
+		for(int i = 1; i <= refrigerator.getCapacity() ; i += 2) {
 			int j = i + 1;
 			Beer beerA = new Beer(i, Brand.A);
 			Beer beerB = new Beer(j, Brand.B);

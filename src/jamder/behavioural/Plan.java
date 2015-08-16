@@ -45,17 +45,14 @@ public class Plan extends SequentialBehaviour
 	public void addAction(Action action) { actions.add(action); }
 	public boolean containAction(Action action) { return actions.contains(action); }
 	
-	public boolean isEqual(Plan plan)
-	{
+	public boolean isEqual(Plan plan) {
 		List<Action> actionList = plan.getActionList();
 		
-		if( actions.size() == actionList.size() )
-		{
+		if( actions.size() == actionList.size() ) {
 			Iterator<Action> it1 = actions.iterator(); 
 			Iterator<Action> it2 = actionList.iterator();
 			
-			while( it1.hasNext() && it2.hasNext() )
-			{
+			while( it1.hasNext() && it2.hasNext() ) {
 				Action action1 = it1.next();
 				Action action2 = it2.next();
 				

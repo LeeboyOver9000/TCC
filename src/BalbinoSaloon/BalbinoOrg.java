@@ -6,8 +6,7 @@ import jamder.roles.AgentRole;
 
 public class BalbinoOrg extends Organization 
 {	
-	public BalbinoOrg(String name, Environment env, AgentRole role)
-	{
+	public BalbinoOrg(String name, Environment env, AgentRole role) {
 		super(name, env, role);
 	}
 }

@@ -3,7 +3,6 @@ package jamder.roles;
 import jamder.Organization;
 import jamder.agents.GenericAgent;
 import jamder.behavioural.Action;
-import jamder.monitoring.Monitor;
 import jamder.norms.Norm;
 import jamder.structural.Belief;
 
@@ -14,7 +13,6 @@ public abstract class AgentRole
 	private String name;
 	private GenericAgent player;
 	private Organization owner;
-	//private AgentRoleStatus status = AgentRoleStatus.DEACTIVATE;
 	
 	private Hashtable<String, Action> actions = new Hashtable<String, Action>();
 	private Hashtable<String, Belief> beliefs = new Hashtable<String, Belief>();
@@ -38,7 +36,6 @@ public abstract class AgentRole
 			}
 			
 			player.addAgentRole( name, this );
-			//status = AgentRoleStatus.ACTIVATE;
 		}
 	}
 	

@@ -14,16 +14,14 @@ public class Ordering extends Action
 	private ACLMessage message;
 	private MessageTemplate mt = MessageTemplate.MatchPerformative(ACLMessage.CONFIRM);
 	
-	public Ordering(Client agent)
-	{
+	public Ordering(Client agent) {
 		super("Ordering");
 		this.agent = agent;
 		brand = agent.getBrand();
 	}
 
 	@Override
-	public void execute() 
-	{	
+	public void execute() {	
 		ACLMessage msg = new ACLMessage(ACLMessage.REQUEST);
 		msg.setContent( brand.toString() + " " + agent.getTable().getName() );
 		msg.addReceiver( new AID( agent.getTable().getResponsible().getLocalName(), AID.ISLOCALNAME ) );
@@ -31,8 +29,7 @@ public class Ordering extends Action
 	}
 
 	@Override
-	public boolean preConditionIsTrue()
-	{
+	public boolean preConditionIsTrue() {
 		message = myAgent.receive(mt);
 		if(message != null) {
 			agent.addBehaviour( new DrinkingBeer(agent) );

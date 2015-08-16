@@ -24,6 +24,10 @@ import jamder.Environment;
 import jamder.agents.UtilityAgent;
 import jamder.behavioural.Plan;
 import jamder.behavioural.Sensor;
+import jamder.norms.Norm;
+import jamder.norms.NormResource;
+import jamder.norms.NormType;
+import jamder.norms.Sanction;
 import jamder.roles.AgentRole;
 import jamder.structural.Belief;
 import jamder.structural.Goal;
@@ -47,8 +51,7 @@ public class Waiter extends UtilityAgent
 	private MessageTemplate mtr = MessageTemplate.MatchPerformative(ACLMessage.REQUEST);
 	private MessageTemplate mtp = MessageTemplate.MatchPerformative(ACLMessage.PROPAGATE);
 	
-	public Waiter(String name, Environment environment, AgentRole agentRole, Refrigerator refrigerator, List<Beer> beers, List<Table> tables)
-	{
+	public Waiter(String name, Environment environment, AgentRole agentRole, Refrigerator refrigerator, List<Beer> beers, List<Table> tables) {
 		super(name, environment, agentRole);
 		this.beers = beers;
 		this.tables = tables;
@@ -88,8 +91,7 @@ public class Waiter extends UtilityAgent
 		
 		try {
 			DFService.register(this, dfd);
-		}
-		catch(FIPAException exception) {
+		} catch(FIPAException exception) {
 			exception.printStackTrace();
 		}
 		
@@ -100,14 +102,12 @@ public class Waiter extends UtilityAgent
 	protected void takeDown() {
 		try {
 			DFService.deregister(this);
-		}
-		catch(FIPAException exception) {
+		} catch(FIPAException exception) {
 			exception.printStackTrace();
 		}
 	}
 	
-	private class Perception extends Sensor
-	{	
+	private class Perception extends Sensor {	
 		private Waiter agent;
 		
 		protected Perception(Waiter agent, int time) {
@@ -138,11 +138,13 @@ public class Waiter extends UtilityAgent
 			
 			if(tablePropagate > -1 ) {
 				Table t = (Table)nextFunction( tables.get(tablePropagate) );
+				//normProcessBelief(t);
 				formulateGoalsFunction(t);
 			}
 			
 			if(tableRequest > -1) {
 				Table t = (Table)nextFunction( tables.get(tableRequest) );
+				//normProcessBelief(t);
 				formulateGoalsFunction(t);
 			} 
 			
@@ -150,6 +152,7 @@ public class Waiter extends UtilityAgent
 			
 			List<Plan> plans = planning(goals);
 			Plan bestPlan = utilityFunction(plans);
+			//executeNormativePlan( bestPlan );
 			executePlan(bestPlan);
 		}
 	}
@@ -212,14 +215,42 @@ public class Waiter extends UtilityAgent
 
 	@Override
 	protected List<Plan> planning(List<Goal> goals) {
+		deleteTempNorm();
 		List<Plan> plans = new ArrayList<Plan>();
 		
 		if(goals != null && !goals.isEmpty() ) {
 			for(Goal goal : goals) {
+				goal.setNormType( NormType.PERMISSION );
+				
+				Norm norm = containsNormGoal(goal, NormType.OBLIGATION);
+				if( norm != null ) {
+					goal.setNormType(NormType.OBLIGATION);
+				} 
+					
+				norm = containsNormGoal(goal, NormType.PROHIBITION);
+				if( norm != null ) {
+					goal.setNormType(NormType.PROHIBITION);
+				}
+				
 				if(goal instanceof KeepEnvironmentStraight) {
 					Plan plan = new Plan(this);
 					kickOutClient.setMessage(propagate);
 					plan.addAction(kickOutClient);
+					
+					if(goal.getNormType() == NormType.OBLIGATION) {
+						addPlan(goal.getName(), plan);
+						NormResource resource = new NormResource(plan);
+						Norm normTemp = new Norm( goal.getName() + "TEMP", NormType.OBLIGATION, resource, norm.getNormConstraint(), norm.getAllSanction() );
+						insertTempNorm(normTemp);
+					} 
+					
+					if( goal.getNormType() == NormType.PROHIBITION ) {
+						addPlan(goal.getName(), plan);
+						NormResource resource = new NormResource(plan);
+						Norm normTemp = new Norm( goal.getName() + "TEMP", NormType.PROHIBITION, resource, norm.getNormConstraint(), norm.getAllSanction() );
+						insertTempNorm(normTemp);
+					}
+					
 					plans.add(plan);
 				}
 				
@@ -227,6 +258,21 @@ public class Waiter extends UtilityAgent
 					Plan plan = new Plan(this);
 					sellBeer.setMessage(request);
 					plan.addAction(sellBeer);
+					
+					if(goal.getNormType() == NormType.OBLIGATION) {
+						addPlan(goal.getName(), plan);
+						NormResource resource = new NormResource(plan);
+						Norm normTemp = new Norm( goal.getName() + "TEMP", NormType.OBLIGATION, resource, norm.getNormConstraint(), norm.getAllSanction() );
+						insertTempNorm(normTemp);
+					} 
+					
+					if( goal.getNormType() == NormType.PROHIBITION ) {
+						addPlan(goal.getName(), plan);
+						NormResource resource = new NormResource(plan);
+						Norm normTemp = new Norm( goal.getName() + "TEMP", NormType.PROHIBITION, resource, norm.getNormConstraint(), norm.getAllSanction() );
+						insertTempNorm(normTemp);
+					}
+					
 					plans.add(plan);
 				}
 				
@@ -235,6 +281,21 @@ public class Waiter extends UtilityAgent
 					Beer beer = ((PutBeersInRefrigerator)goal).getBeer();
 					takeToFreeze.setBeer(beer);
 					plan.addAction(takeToFreeze);
+					
+					if(goal.getNormType() == NormType.OBLIGATION) {
+						addPlan(goal.getName(), plan);
+						NormResource resource = new NormResource(plan);
+						Norm normTemp = new Norm( goal.getName() + "TEMP", NormType.OBLIGATION, resource, norm.getNormConstraint(), norm.getAllSanction() );
+						insertTempNorm(normTemp);
+					} 
+					
+					if( goal.getNormType() == NormType.PROHIBITION ) {
+						addPlan(goal.getName(), plan);
+						NormResource resource = new NormResource(plan);
+						Norm normTemp = new Norm( goal.getName() + "TEMP", NormType.PROHIBITION, resource, norm.getNormConstraint(), norm.getAllSanction() );
+						insertTempNorm(normTemp);
+					}
+					
 					plans.add(plan);
 				}
 			}
@@ -246,12 +307,38 @@ public class Waiter extends UtilityAgent
 	@Override
 	protected Plan utilityFunction(List<Plan> plans) {
 		Plan bestPlan = null;
-		int best = -1;
+		
+		int best = 0;
+		for(Plan plan : plans) {
+			
+			int sanctionCost = 0;
+			for(Norm norm : getAllTempNorms().values() ) {
+				
+				Plan p = norm.getNormResource().getPlan();
+				if ( p!=null && p.isEqual(plan) && norm.getNormType() == NormType.OBLIGATION && norm.isActive() ) {
+					
+					for(Sanction s : norm.getAllSanction().values() ) {
+						 sanctionCost += s.getIntPunishment() + s.getIntReward();
+					}
+				}
+			}
+			
+			if( plan.getCost() + sanctionCost > best) {
+				bestPlan = plan;
+			}
+			
+		}
+		
+		/*
+		Plan bestPlan = null;
+		int best = 0;
+		
 		for(Plan plan : plans) {
 			if(plan.getCost() > best) {
 				bestPlan = plan;
 			}
-		}		
+		}
+		*/
 		
 		return bestPlan;
 	}
@@ -262,16 +349,8 @@ public class Waiter extends UtilityAgent
 		return null;
 	}
 
-	
-	/******************* Métodos para Agentes Orientados a Objetivos *******************/
 	@Override
-	protected Plan planning(Goal goal) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	protected Goal formulateGoalFunction(Belief belief) {
+	protected Plan utilityNormativeFunction(List<Plan> plans) {
 		// TODO Auto-generated method stub
 		return null;
 	}

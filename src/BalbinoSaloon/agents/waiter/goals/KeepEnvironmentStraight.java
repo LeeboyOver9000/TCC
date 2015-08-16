@@ -8,6 +8,11 @@ import jamder.structural.Goal;
 public class KeepEnvironmentStraight extends Goal {
 	private Table table;
 	
+	public KeepEnvironmentStraight() {
+		setName("KeepEnvironmentStraight");
+		this.table = null;
+	}
+	
 	public KeepEnvironmentStraight(Table table) {
 		this.table = table;
 		setAchieved(false);
@@ -17,7 +22,7 @@ public class KeepEnvironmentStraight extends Goal {
 	public boolean isAchieved() {
 		Belief clientStateGoal = new Belief("Drunk");
 		
-		if( !table.isFree() ) {
+		if( table != null && !table.isFree() ) {
 			for( Client client : table.getClients() ) {
 				if( table.getClientState(client).getName().equalsIgnoreCase( clientStateGoal.getName() )) {
 					return false;

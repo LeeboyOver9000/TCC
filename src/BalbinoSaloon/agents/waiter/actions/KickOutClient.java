@@ -12,7 +12,7 @@ public class KickOutClient extends Action
 	public KickOutClient(Waiter agent) {
 		super("KickOutClient");
 		this.agent = agent;
-		setCost(50);
+		setCost(20);
 	}
 
 	@Override

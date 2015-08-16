@@ -81,54 +81,44 @@ public class Path
 					plan.addAction( agent.getKeyAction("TurnLeft") );
 					plan.addAction( agent.getKeyAction("TurnLeft") );
 				}
-			}
-			
-			else if( agent.getDirection() == Direction.EAST )
-			{
+			} else if( agent.getDirection() == Direction.EAST ) {
 				if( direction == Direction.NORTH ) {
 					plan.addAction( agent.getKeyAction("TurnLeft") );
-				}
-				
-				if( direction == Direction.WEST ) {
-					plan.addAction( agent.getKeyAction("TurnRight") );
-					plan.addAction( agent.getKeyAction("TurnRight") );
-					
 				}
 				
 				if( direction == Direction.SOUTH ) {
 					plan.addAction( agent.getKeyAction("TurnRight") );
 				}
-			}
-			
-			else if( agent.getDirection() == Direction.WEST )
-			{
+				
+				if( direction == Direction.WEST ) {
+					plan.addAction( agent.getKeyAction("TurnRight") );
+					plan.addAction( agent.getKeyAction("TurnRight") );	
+				}
+			} else if( agent.getDirection() == Direction.WEST )	{
 				if( direction == Direction.NORTH ) {
 					plan.addAction( agent.getKeyAction("TurnRight") );
+				}
+				
+				if( direction == Direction.SOUTH ) {
+					plan.addAction( agent.getKeyAction("TurnLeft") );
 				}
 				
 				if( direction == Direction.EAST ) {
 					plan.addAction( agent.getKeyAction("TurnLeft") );
 					plan.addAction( agent.getKeyAction("TurnLeft") );		
 				}
-				
-				if( direction == Direction.SOUTH ) {
-					plan.addAction( agent.getKeyAction("TurnLeft") );
-				}
-			}
-			
-			else if( agent.getDirection() == Direction.SOUTH )
-			{
-				if( direction == Direction.NORTH ) {
-					plan.addAction( agent.getKeyAction("TurnRight") );
-					plan.addAction( agent.getKeyAction("TurnRight") );
-				}
-				
+			} else if( agent.getDirection() == Direction.SOUTH ) {
 				if( direction == Direction.WEST ) {
 					plan.addAction( agent.getKeyAction("TurnRight") );
 				}
 				
 				if( direction == Direction.EAST ) {
 					plan.addAction( agent.getKeyAction("TurnLeft") );
+				}
+				
+				if( direction == Direction.NORTH ) {
+					plan.addAction( agent.getKeyAction("TurnRight") );
+					plan.addAction( agent.getKeyAction("TurnRight") );
 				}
 			}
 		}
@@ -136,26 +126,24 @@ public class Path
 		plan.addAction( agent.getKeyAction("Forward") );
 	}
 	
-	public static void cleanAllFlags(Hunter agent) {
-		for(int i = 0; i < agent.getMaze().getMazeSize() ; i++) {
-			for(int j = 0 ; j < agent.getMaze().getMazeSize(); j++) {
-				agent.getMaze().getRoom(i, j).setFlag(false);
-			}
-		}
-	}
-	
 	public static Stack<Room> getPathDFS(Hunter agent, Coordinate target) {
-		cleanAllFlags(agent);
+		int size = agent.getKnowledgeBase().getMazeSize();
+    	boolean[][] verified = new boolean[size][size];
+    	
+    	for( int i = 0 ; i < size ; i++)
+    		for(int j = 0 ; j < size ; j++)
+    			verified[i][j] = false;
 		
 		Stack<Room> path = new Stack<Room>();
 		Room source = agent.getKnowledgeBase().getCurrentRoom();
-		recursiveCall(agent, source, target, path);
+		recursiveCall(agent, source, target, path, verified);
 		
 		return path;
 	}
 	
-	public static boolean recursiveCall(Hunter agent, Room currentRoom, Coordinate target, Stack<Room> path) {
-		currentRoom.setFlag(true);
+	public static boolean recursiveCall(Hunter agent, Room currentRoom, Coordinate target, Stack<Room> path, boolean[][] verified) {
+		verified[currentRoom.getCoordinate().getX()][currentRoom.getCoordinate().getY()] = true;
+		
 		if( currentRoom.getCoordinate().getX() == target.getX() && currentRoom.getCoordinate().getY() == target.getY() ){
 			path.push(currentRoom);
 			return true;
@@ -165,30 +153,34 @@ public class Path
 			Room left = currentRoom.getRoomLeft();
 			Room down = currentRoom.getRoomDown();
 			
-			if(up != null && up.getFlag() != true && agent.getKnowledgeBase().isSafe(target.getX(), target.getY())) {
-				if( recursiveCall(agent, up, target, path) ) {
-					path.push(up);
+			if(up != null && verified[up.getCoordinate().getX()][up.getCoordinate().getY()] != true && 
+				agent.getKnowledgeBase().isSafe(target.getX(), target.getY())) {
+				if( recursiveCall(agent, up, target, path, verified) ) {
+					path.push(currentRoom);
 					return true;
 				}
 			}
 			
-			if(right != null && right.getFlag() != true && agent.getKnowledgeBase().isSafe(target.getX(), target.getY()) ) {
-				if( recursiveCall(agent, right, target, path) ) {
-					path.push(right);
+			if(right != null && verified[right.getCoordinate().getX()][right.getCoordinate().getY()] != true && 
+				agent.getKnowledgeBase().isSafe(target.getX(), target.getY()) ) {
+				if( recursiveCall(agent, right, target, path, verified) ) {
+					path.push(currentRoom);
 					return true;
 				}
 			}
 			
-			if(left != null && left.getFlag() != true && agent.getKnowledgeBase().isSafe(target.getX(), target.getY()) ) {
-				if( recursiveCall(agent, left, target, path) ) {
-					path.push(left);
+			if(left != null && verified[left.getCoordinate().getX()][left.getCoordinate().getY()] != true && 
+				agent.getKnowledgeBase().isSafe(target.getX(), target.getY()) ) {
+				if( recursiveCall(agent, left, target, path, verified) ) {
+					path.push(currentRoom);
 					return true;
 				}
 			}
 			
-			if(down != null && down.getFlag() != true && agent.getKnowledgeBase().isSafe(target.getX(), target.getY()) ) {
-				if( recursiveCall(agent, down, target, path) ) {
-					path.push(down);
+			if(down != null && verified[down.getCoordinate().getX()][down.getCoordinate().getY()] != true && 
+				agent.getKnowledgeBase().isSafe(target.getX(), target.getY()) ) {
+				if( recursiveCall(agent, down, target, path, verified) ) {
+					path.push(currentRoom);
 					return true;
 				}
 			}

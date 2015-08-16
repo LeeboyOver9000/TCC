@@ -51,7 +51,7 @@ public class Hunter extends GoalAgent
 	private TurnRight turnRight;
 	private Shoot shoot;
 	private Grab grab;
-	private Climb climb; 
+	private Climb climb;
 	
 	private List<Room> roomToGo = new ArrayList<Room>();
 	private Random random = new Random( System.currentTimeMillis() );

@@ -73,15 +73,14 @@ public abstract class GoalAgent extends GenericAgent
 	public Hashtable<String, Plan> getAllPlans() { return plans; }
 	
 	// Temporary Norms
-	private void insertTempNorm(Norm norm) { restrictTempNorms.put(norm.getName(), norm); }
-	private void deleteTempNorm() { restrictTempNorms.clear(); }
+	protected void insertTempNorm(Norm norm) { restrictTempNorms.put(norm.getName(), norm); }
+	protected void deleteTempNorm() { restrictTempNorms.clear(); }
+	protected Hashtable<String, Norm> getAllTempNorms() { return restrictTempNorms; }
 	
 	/********************************************************************************************************************/
 	
-	public Norm containsNormAction(Action ac, NormType nt)
-	{
-		for ( Norm norm: getAllRestrictNorms().values() )
-		{
+	public Norm containsNormAction(Action ac, NormType nt) {
+		for ( Norm norm: getAllRestrictNorms().values() ) {
 			Action a = norm.getNormResource().getAction();
 			if ( a!=null && a.getName().equalsIgnoreCase(ac.getName()) && norm.getNormType() == nt && norm.isActive() ) {
 				return norm;
@@ -91,10 +90,8 @@ public abstract class GoalAgent extends GenericAgent
 		return null;
 	}
 
-	public Norm containsNormActionDiferent(Action ac, NormType nt)
-	{
-		for ( Norm norm: getAllRestrictNorms().values() )
-		{
+	public Norm containsNormActionDiferent(Action ac, NormType nt) {
+		for ( Norm norm: getAllRestrictNorms().values() ) {
 			Action a = norm.getNormResource().getAction();
 			if ( a!=null && !a.getName().equalsIgnoreCase(ac.getName()) && norm.getNormType() == nt && norm.isActive() ) {
 				return norm;
@@ -104,10 +101,8 @@ public abstract class GoalAgent extends GenericAgent
 		return null;
 	}
 	
-	protected Norm containsNormPlan(Plan pl, NormType nt)
-	{
-		for ( Norm norm: restrictTempNorms.values() )
-		{
+	protected Norm containsNormPlan(Plan pl, NormType nt) {
+		for ( Norm norm: restrictTempNorms.values() ) {
 			Plan p = norm.getNormResource().getPlan();
 			if ( p!=null && p.isEqual(pl) && norm.getNormType() == nt && norm.isActive() ) {
 				return norm;
@@ -117,10 +112,8 @@ public abstract class GoalAgent extends GenericAgent
 		return null;
 	}
 	
-	protected Norm containsNormPlanDiferent(Plan pl, NormType nt)
-	{
-		for ( Norm norm: restrictTempNorms.values() )
-		{
+	protected Norm containsNormPlanDiferent(Plan pl, NormType nt) {
+		for ( Norm norm: restrictTempNorms.values() ) {
 			Plan p = norm.getNormResource().getPlan();
 			if ( p!=null && !p.isEqual(pl) && norm.getNormType() == nt && norm.isActive() ) {
 				return norm;
@@ -130,10 +123,8 @@ public abstract class GoalAgent extends GenericAgent
 		return null;
 	}
 	
-	public Norm containsNormBelief(Belief blf, NormType nt)
-	{
-		for ( Norm norm: getAllRestrictNorms().values() )
-		{
+	public Norm containsNormBelief(Belief blf, NormType nt) {
+		for ( Norm norm: getAllRestrictNorms().values() ) {
 			Belief b = norm.getNormResource().getBelief();
 			if ( b!=null && b.getName().equalsIgnoreCase(blf.getName()) && norm.getNormType() == nt && norm.isActive() ) {
 				return norm;
@@ -143,10 +134,8 @@ public abstract class GoalAgent extends GenericAgent
 		return null;
 	}
 
-	public Norm containsNormBeliefDiferent(Belief blf, NormType nt)
-	{
-		for ( Norm norm: getAllRestrictNorms().values() )
-		{
+	public Norm containsNormBeliefDiferent(Belief blf, NormType nt) {
+		for ( Norm norm: getAllRestrictNorms().values() ) {
 			Belief b = norm.getNormResource().getBelief();
 			if ( b!=null && !b.getName().equalsIgnoreCase( blf.getName() ) && norm.getNormType() == nt && norm.isActive() ) {
 				return norm;
@@ -156,10 +145,8 @@ public abstract class GoalAgent extends GenericAgent
 		return null;
 	}
 	
-	public Norm containsNormGoal(Goal gl, NormType nt)
-	{
-		for ( Norm norm: getAllRestrictNorms().values() )
-		{
+	public Norm containsNormGoal(Goal gl, NormType nt) {
+		for ( Norm norm: getAllRestrictNorms().values() ) {
 			Goal g = norm.getNormResource().getGoal();
 			if ( g!=null && g.getName().equalsIgnoreCase(gl.getName()) && norm.getNormType() == nt && norm.isActive() ) {
 				return norm;
@@ -169,10 +156,8 @@ public abstract class GoalAgent extends GenericAgent
 		return null;
 	}
 	
-	public Norm containsNormGoalDiferent(Goal gl, NormType nt)
-	{
-		for ( Norm norm: getAllRestrictNorms().values() )
-		{
+	public Norm containsNormGoalDiferent(Goal gl, NormType nt) {
+		for ( Norm norm: getAllRestrictNorms().values() ) {
 			Goal g = norm.getNormResource().getGoal();
 			if ( g!=null && !g.getName().equalsIgnoreCase( gl.getName() ) && norm.getNormType() == nt && norm.isActive() ) {
 				return norm;
@@ -184,22 +169,17 @@ public abstract class GoalAgent extends GenericAgent
 	
 	/********************************************************************************************************************/
 	
-	public void normProcessBelief(Belief belief)
-	{
+	public void normProcessBelief(Belief belief) {
 		deleteTempNorm();
 		removeAllPlans();
 		
-		if( containBelief( belief.getName() ) )
-		{
+		if( containBelief( belief.getName() ) ) {
 			List<Plan> plans = successorFunction( belief );
-			if(plans != null)
-			{
+			if(plans != null) {
 				Norm norm = containsNormBelief(belief, NormType.OBLIGATION);
-				if( norm != null )
-				{	
+				if( norm != null ) {	
 					int count = 0;
-					for(Plan plan : plans) 
-					{
+					for(Plan plan : plans) {
 						count++;
 						addPlan("CurrentBeliefPlan" + count, plan);
 						NormResource resource = new NormResource(plan);
@@ -209,11 +189,9 @@ public abstract class GoalAgent extends GenericAgent
 				}
 					
 				norm = containsNormBelief(belief, NormType.PROHIBITION);
-				if( norm != null )
-				{	
+				if( norm != null ) {	
 					int count = 0;
-					for(Plan plan : plans) 
-					{
+					for(Plan plan : plans) {
 						count++;
 						addPlan("CurrentBeliefPlan" + count, plan);
 						NormResource resource = new NormResource(plan);
@@ -228,47 +206,35 @@ public abstract class GoalAgent extends GenericAgent
 	/********************************************************************************************************************/
 	
 	// Method whose process the norms of goals in GoalAgent
-	public Goal normProcessGoal(Goal goal)
-	{
+	public Goal normProcessGoal(Goal goal) {
 		goal.setNormType( NormType.PERMISSION );
 		
 		Norm norm = containsNormGoal(goal, NormType.OBLIGATION);
 		if( norm != null ) {
 			goal.setNormType( NormType.OBLIGATION );
-		}
-		else
-		{
+		} else {
 			norm = containsNormGoalDiferent(goal, NormType.OBLIGATION);
-			if( norm != null )
-			{	
-				for( Goal gl :  getAllGoals().values() )
-				{
+			if( norm != null ) {	
+				for( Goal gl :  getAllGoals().values() ) {
 					norm = containsNormGoal(gl, NormType.OBLIGATION);
 					
-					if( norm != null ) 
-					{
+					if( norm != null ) {
 						gl.setNormType( NormType.OBLIGATION );
 						goalRunning = gl;
 						return gl;
 					}
 				}
-			}
-			else
-			{
+			} else {
 				norm = containsNormGoal(goal, NormType.PROHIBITION);
-				if( norm != null )
-				{
+				if( norm != null ) {
 					goal.setNormType( NormType.PROHIBITION );
 					
-					for( Goal gl :  getAllGoals().values() )
-					{
+					for( Goal gl :  getAllGoals().values() ) {
 						norm = containsNormGoal(gl, NormType.PROHIBITION);
 						
 						if(norm != null) {
 							gl.setNormType( NormType.PROHIBITION );
-						}
-						else 
-						{
+						} else {
 							gl.setNormType( NormType.PERMISSION );
 							goalRunning = gl;
 							return gl;
@@ -292,12 +258,9 @@ public abstract class GoalAgent extends GenericAgent
 	{
 		NormType actionsNormType = NormType.PERMISSION;
 		
-		if( actions != null && !actions.isEmpty() )
-		{
-			for(Action action : actions)
-			{	
-				if( action != null && !containKeyAction(action.getName()) )
-				{
+		if( actions != null && !actions.isEmpty() ) {
+			for(Action action : actions) {	
+				if( action != null && !containKeyAction(action.getName()) ) {
 					// Check for Obligation norms
 					Norm norm = containsNormAction(action, NormType.OBLIGATION);
 					
@@ -326,16 +289,12 @@ public abstract class GoalAgent extends GenericAgent
 	
 	/********************************************************************************************************************/
 	
-	public void normProcessPlan(Plan plan)
-	{
-		for( Plan pl : getAllPlans().values() )
-		{
+	public void normProcessPlan(Plan plan) {
+		for( Plan pl : getAllPlans().values() ) {
 			Norm norm = containsNormPlan(pl, NormType.OBLIGATION);
 			if(norm != null) {
 				pl.setNormType(NormType.OBLIGATION);
-			}
-			else
-			{
+			} else {
 				norm = containsNormPlan(pl, NormType.PROHIBITION);
 				if(norm != null) {
 					pl.setNormType(NormType.PROHIBITION);
@@ -346,8 +305,7 @@ public abstract class GoalAgent extends GenericAgent
 			}
 		}
 		
-		if(plan != null && goalRunning != null)
-		{
+		if(plan != null && goalRunning != null) {
 			if( goalRunning.getNormType() == NormType.OBLIGATION ) {
 				plan.setNormType(NormType.OBLIGATION);
 				
@@ -365,21 +323,17 @@ public abstract class GoalAgent extends GenericAgent
 	
 	/********************************************************************************************************************/
 	
-	public void executeNormativePlan(Plan plan)
-	{
+	public void executeNormativePlan(Plan plan) {
 		normProcessPlan(plan);
 		
-		if(plan != null)
-		{
+		if(plan != null) {
 			if( plan.getNormType() == NormType.OBLIGATION ) {
 				executePlan(plan);
 				return;
 			}
 			
-			for( Plan pl : getAllPlans().values() )
-			{	
-				if( pl.getNormType() == NormType.OBLIGATION ) 
-				{
+			for( Plan pl : getAllPlans().values() ) {	
+				if( pl.getNormType() == NormType.OBLIGATION ) {
 					executePlan(pl);
 					return;
 				}
@@ -390,8 +344,7 @@ public abstract class GoalAgent extends GenericAgent
 			}
 				
 			NormType normType = getNormTypeActionList( plan.getActionList() );
-			if( normType != null && normType != NormType.PROHIBITION && plan.getNormType() != NormType.PROHIBITION )
-			{
+			if( normType != null && normType != NormType.PROHIBITION && plan.getNormType() != NormType.PROHIBITION ) {
 				executePlan(plan);
 				return;
 			}
@@ -400,8 +353,7 @@ public abstract class GoalAgent extends GenericAgent
 	
 	public void executePlan(Plan plan)
 	{
-		if( plan != null )
-		{
+		if( plan != null ) {
 			for(Action action : plan.getActionList() ) {				
 				if( action != null ) {
 					plan.addSubBehaviour(action);

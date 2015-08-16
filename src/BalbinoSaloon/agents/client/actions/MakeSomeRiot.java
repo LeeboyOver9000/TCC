@@ -56,8 +56,7 @@ public class MakeSomeRiot extends Action
 	}
 
 	@Override
-	public boolean preConditionIsTrue() 
-	{
+	public boolean preConditionIsTrue() {
 		if( agent.isDrunk() ) {
 			return true;
 		}

@@ -2,7 +2,6 @@ package jamder.roles;
 
 import jamder.Organization;
 import jamder.agents.GenericAgent;
-import jamder.agents.GoalAgent;
 import jamder.agents.ReflexAgent;
 import jamder.behavioural.Action;
 import jamder.norms.Norm;
@@ -21,17 +20,13 @@ public class ProactiveAgentRole extends AgentRole
 	}
 	
 	// Goals
-	public Goal getGoal(String key) 
-	{
+	public Goal getGoal(String key) {
 		// Reflex and Model agents do not have goals
 		if (getPlayer() instanceof ReflexAgent) {
 			return null;
 		}
 		
-		Goal goal = goals.get(key);
-		// As AgentRole's Goal will never have plans, it is clean.
-		goal.removeAllPlans();
-		return goal;
+		return goals.get(key);
 	}
 	
 	public void addGoal(String key, Goal goal) {
@@ -40,8 +35,6 @@ public class ProactiveAgentRole extends AgentRole
 			return ;
 		}
 		
-		// As AgentRole's Goal will never have plans, it is clean.
-		goal.removeAllPlans();
 		goals.put(key, goal);
 	}
 	
@@ -59,16 +52,11 @@ public class ProactiveAgentRole extends AgentRole
 			return null;
 		}
 		
-		// As AgentRole's Goal will never have plans, it is clean.
-		for (Goal goal : goals.values()) {
-			goal.removeAllPlans();
-		}
 		return goals;
 	}
 	
 	@Override
-	protected void checkingNorms() 
-	{
+	protected void checkingNorms() {
 		for ( Action action : getAllActions().values() )
 			action.setNormType(null);
 
@@ -78,8 +66,7 @@ public class ProactiveAgentRole extends AgentRole
 		for( Goal goal : getAllGoals().values() )
 			goal.setNormType(null);
 		
-		for( Norm norm : getAllRestrictNorms().values() )
-		{
+		for( Norm norm : getAllRestrictNorms().values() ) {
 			getPlayer().addRestrictNorm(norm.getName(), norm);
 
 			Action action = norm.getNormResource().getAction();
@@ -101,26 +88,19 @@ public class ProactiveAgentRole extends AgentRole
 	}
 	
 	@Override
-	public void initializeNorm() 
-	{
+	public void initializeNorm() {
 		checkingNorms();
 
-		for ( Action action : getAllActions().values() ) 
-		{
-			if ( action.getNormType() != null ) // Only action linked with deontic concept will goona be setted
-			{
-				if ( action.getNormType() == NormType.OBLIGATION )
-				{
+		for ( Action action : getAllActions().values() ) {
+			if ( action.getNormType() != null ) { // Only action linked with deontic concept will goona be setted
+				if ( action.getNormType() == NormType.OBLIGATION ) {
 					if ( getPlayer().containAction( action.getName() ) )
 						getPlayer().getAction( action.getName() ).setNormType( NormType.OBLIGATION );
-				}
-				else if ( action.getNormType() == NormType.PROHIBITION )
-				{
+				} else if ( action.getNormType() == NormType.PROHIBITION ) {
 					if ( getPlayer().containAction( action.getName() ) )
 						getPlayer().getAction( action.getName() ).setNormType( NormType.PROHIBITION );
 				}
-				else
-				{
+				else {
 					if ( getPlayer().containAction( action.getName() ) )
 						getPlayer().getAction( action.getName() ).setNormType( NormType.PERMISSION );
 				}
@@ -133,22 +113,15 @@ public class ProactiveAgentRole extends AgentRole
 			}
 		}
 		
-		for( Goal goal : getAllGoals().values() )
-		{
-			if( goal.getNormType() != null )
-			{
-				if ( goal.getNormType() == NormType.OBLIGATION )
-				{
+		for( Goal goal : getAllGoals().values() ) {
+			if( goal.getNormType() != null ) {
+				if ( goal.getNormType() == NormType.OBLIGATION ) {
 					if ( getPlayer().containGoal( goal.getName() ) )
 						getPlayer().getGoal( goal.getName() ).setNormType( NormType.OBLIGATION );
-				}
-				else if ( goal.getNormType() == NormType.PROHIBITION )
-				{
+				} else if ( goal.getNormType() == NormType.PROHIBITION ) {
 					if ( getPlayer().containGoal( goal.getName() ) )
 						getPlayer().getGoal( goal.getName() ).setNormType( NormType.PROHIBITION );
-				}
-				else
-				{
+				} else {
 					if ( getPlayer().containGoal( goal.getName() ) )
 						getPlayer().getGoal( goal.getName() ).setNormType( NormType.PERMISSION );
 				}

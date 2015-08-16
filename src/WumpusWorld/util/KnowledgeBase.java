@@ -224,15 +224,19 @@ public class KnowledgeBase
 					
 					if( !isVisited(x-1, y) && inferenceSAFE(x-1, y) ) {
 						safe[x-1][y] = true;
+						Path.addNextNode(currentRoom, agent.getMaze().getRoom(x-1, y), Direction.WEST);
 					}
 					if( !isVisited(x+1, y) && inferenceSAFE(x+1, y) ) {
 						safe[x+1][y] = true;
+						Path.addNextNode(currentRoom, agent.getMaze().getRoom(x+1, y), Direction.EAST);
 					}
 					if( !isVisited(x, y-1) && inferenceSAFE(x, y-1) ) {
 						safe[x][y-1] = true;
+						Path.addNextNode(currentRoom, agent.getMaze().getRoom(x, y-1), Direction.NORTH);
 					}
 					if( !isVisited(x, y+1) && inferenceSAFE(x, y+1) ) {
 						safe[x][y+1] = true;
+						Path.addNextNode(currentRoom, agent.getMaze().getRoom(x, y+1), Direction.SOUTH);
 					}
 				}
 			}
@@ -244,19 +248,27 @@ public class KnowledgeBase
 					wumpus[x+1][y] = true;
 					safe[x][y-1] = true;
 					safe[x][y+1] = true;
+					
+					Path.addNextNode(currentRoom, agent.getMaze().getRoom(x, y-1), Direction.NORTH);
+					Path.addNextNode(currentRoom, agent.getMaze().getRoom(x, y+1), Direction.SOUTH);
 				} else if( x == maze_size-1 ) {
 					wumpus[x-1][y] = true;
 					safe[x][y-1] = true;
 					safe[x][y+1] = true;
+					
+					Path.addNextNode(currentRoom, agent.getMaze().getRoom(x, y-1), Direction.NORTH);
+					Path.addNextNode(currentRoom, agent.getMaze().getRoom(x, y+1), Direction.SOUTH);
 				} else if( y == 0 ) {
 					safe[x-1][y] = true;
 					safe[x+1][y] = true;
 					wumpus[x][y+1] = true;
-				} else if( y == maze_size-1 )
-				{
+				} else if( y == maze_size-1 ) {
 					safe[x-1][y] = true;
 					safe[x+1][y] = true;
 					wumpus[x][y-1] = true;
+					
+					Path.addNextNode(currentRoom, agent.getMaze().getRoom(x-1, y), Direction.WEST);
+					Path.addNextNode(currentRoom, agent.getMaze().getRoom(x+1, y), Direction.EAST);
 				} else {
 					if( !isVisited(x-1, y) ) {
 						if( inferenceWUMPUS(x-1, y) ) {
@@ -264,8 +276,7 @@ public class KnowledgeBase
 						}
 					}
 					
-					if( !isVisited(x+1, y) ) 
-					{	
+					if( !isVisited(x+1, y) ) {	
 						if( inferenceWUMPUS(x+1, y) ) {
 							wumpus[x+1][y] = true;
 						}
@@ -408,6 +419,9 @@ public class KnowledgeBase
 		
 		List<Coordinate> coordinates = new ArrayList<Coordinate>();
 	
+		if( x > 0 && isSafeMove(room, Direction.WEST) )
+			coordinates.add(new Coordinate(x-1, y));
+		
 		if( y > 0 && isSafeMove(room, Direction.NORTH) )
 			coordinates.add(new Coordinate(x, y-1));
 		
@@ -416,9 +430,6 @@ public class KnowledgeBase
 		
 		if( x < getMazeSize()-1 && isSafeMove(room, Direction.EAST ) )
 			coordinates.add(new Coordinate(x+1, y));
-		
-		if( x > 0 && isSafeMove(room, Direction.WEST) )
-			coordinates.add(new Coordinate(x-1, y));
 		
 		return coordinates;
 	}
@@ -439,16 +450,12 @@ public class KnowledgeBase
 					direction = random.nextInt(4);
 				
 				return dice[direction];
-			}
-			else if( y == size -1 )
-			{	
+			} else if( y == size -1 ) {	
 				while( direction == 1 || direction == 3)
 					direction = random.nextInt(4);
 				
 				return dice[direction];
-			}
-			else
-			{	
+			} else {	
 				while( direction == 3 )
 					direction = random.nextInt(4);
 				
@@ -456,36 +463,32 @@ public class KnowledgeBase
 			}
 		}
 		
-		if( x == size-1 )
-		{
-			if( y == 0 )
-			{
+		if( x == size-1 ) {
+			if( y == 0 ) {
 				while( direction == 0 || direction == 2 )
 					direction = random.nextInt(4);
 				
 				return dice[direction];
-			}
-			else if( y == size-1 )
-			{
+			} else if( y == size-1 ) {
 				while( direction == 1 || direction == 2)
 					direction = random.nextInt(4);
 				
 				return dice[direction];
-			}
-			else
-			{
+			} else {
 				while( direction == 2 )
 					direction = random.nextInt(4);
 				
 				return dice[direction];
 			}
 		}
+		
 		if( y == 0 ) {
 			while( direction == 0 )
 				direction = random.nextInt(4);
 			
 			return dice[direction];
 		}
+		
 		if( y == size-1 ) {
 			while( direction == 1 )
 				direction = random.nextInt(4);

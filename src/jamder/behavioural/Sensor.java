@@ -7,8 +7,7 @@ import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
 import jamder.agents.GenericAgent;
 
-public abstract class Sensor extends TickerBehaviour
-{
+public abstract class Sensor extends TickerBehaviour {
 	public Sensor(GenericAgent agent, int time) {
 		super(agent, time);
 	}

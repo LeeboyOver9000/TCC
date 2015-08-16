@@ -29,7 +29,6 @@ public class Forward extends Action
 	public void execute() 
 	{
 		Maze maze = agent.getMaze();
-		//Room previousRoom = agent.getKnowledgeBase().getCurrentRoom();
 		
 		x = agent.getKnowledgeBase().getCurrentRoom().getCoordinate().getX();
 		y = agent.getKnowledgeBase().getCurrentRoom().getCoordinate().getY();
