@@ -3,15 +3,13 @@ package jamder.behavioural;
 import jade.core.behaviours.SequentialBehaviour;
 import jamder.agents.GenericAgent;
 import jamder.norms.NormType;
-import jamder.structural.Goal;
 
 import java.util.ArrayList;
-import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 
-public class Plan extends SequentialBehaviour
-{
+public class Plan extends SequentialBehaviour {
+	
 	private String name;
 	private int cost = 0;
 	//private GenericAgent agent;

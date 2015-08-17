@@ -32,8 +32,8 @@ import jamder.roles.AgentRole;
 import jamder.structural.Belief;
 import jamder.structural.Goal;
 
-public class Waiter extends UtilityAgent
-{	
+public class Waiter extends UtilityAgent {
+	
 	private List<Beer> beers;
 	private List<Table> tables;
 	private Refrigerator refrigerator;
@@ -315,6 +315,7 @@ public class Waiter extends UtilityAgent
 			for(Norm norm : getAllTempNorms().values() ) {
 				
 				Plan p = norm.getNormResource().getPlan();
+				System.out.println(getAllActions());
 				if ( p!=null && p.isEqual(plan) && norm.getNormType() == NormType.OBLIGATION && norm.isActive() ) {
 					
 					for(Sanction s : norm.getAllSanction().values() ) {

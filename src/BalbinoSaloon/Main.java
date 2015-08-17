@@ -1,16 +1,13 @@
 package BalbinoSaloon;
 
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.Hashtable;
-import java.util.List;
 
 import BalbinoSaloon.Objects.Brand;
 import BalbinoSaloon.agents.client.Client;
 import BalbinoSaloon.agents.waiter.Waiter;
 import BalbinoSaloon.agents.waiter.goals.KeepEnvironmentStraight;
-import jade.lang.acl.ACLMessage;
 import jamder.norms.After;
 import jamder.norms.Norm;
 import jamder.norms.NormConstraint;
@@ -21,10 +18,9 @@ import jamder.roles.ModelAgentRole;
 import jamder.roles.ProactiveAgentRole;
 import jamder.structural.Goal;
 
-public class Main 
-{
-	public static void main(String[] args)
-	{
+public class Main {
+	
+	public static void main(String[] args) {
 		Saloon balbinoBar = new Saloon("Saloon", "localhost", "54321");
 		
 		BalbinoOrg balbinoOrg = new BalbinoOrg("BalbinoOrg", balbinoBar, null);
@@ -34,7 +30,7 @@ public class Main
 		//Hashtable<String, Sanction> sanctions = new Hashtable<String, Sanction>();
 		
 		// Active Norm Constraint
-		Calendar date = new GregorianCalendar(2015, GregorianCalendar.AUGUST, 10, 0, 0, 0);
+		Calendar date = new GregorianCalendar(2015, GregorianCalendar.JULY, 10, 0, 0, 0);
 		
 		NormConstraint time = new After(date);
 		constraint.put("Time", time);
@@ -45,6 +41,8 @@ public class Main
 		Goal goal = new KeepEnvironmentStraight();
 		NormResource nreGoal = new NormResource(goal);
 		Norm n1 = new Norm("N1", NormType.PROHIBITION, nreGoal, constraint);
+		
+		System.out.println(n1);
 		
 		Sanction punishment = new Sanction("PN1", n1);
 		punishment.setIntPunishment(new Integer(-30));
