@@ -12,8 +12,8 @@ import jamder.structural.Goal;
 
 import java.util.Hashtable;
 
-public class GenericAgent extends Agent
-{
+public class GenericAgent extends Agent {
+	
 	private Environment ambient;
 	
 	private Hashtable<String, Action> normativeActions = new Hashtable<String, Action>();
@@ -55,10 +55,10 @@ public class GenericAgent extends Agent
 	
 	// Goals
 	public Goal getGoal(String key) { return normativeGoals.get(key); }
-	protected void addGoal(String key, Goal goal) { normativeGoals.put(key, goal); }
-	protected Goal removeGoal(String key) { return normativeGoals.remove(key); }
-	protected void removeAllGoals() { normativeGoals.clear(); }
-	protected Hashtable<String, Goal> getAllGoals() { return normativeGoals; }
+	public void addGoal(String key, Goal goal) { normativeGoals.put(key, goal); }
+	public Goal removeGoal(String key) { return normativeGoals.remove(key); }
+	public void removeAllGoals() { normativeGoals.clear(); }
+	public Hashtable<String, Goal> getAllGoals() { return normativeGoals; }
 	public boolean containGoal(String key) { return normativeGoals.containsKey(key); }
 	
 	// Plans

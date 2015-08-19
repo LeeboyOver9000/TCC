@@ -13,61 +13,48 @@ import jamder.behavioural.Action;
 import jamder.norms.Norm;
 import jamder.norms.NormType;
 
-public class ReflexAgentRole extends AgentRole
-{
+public class ReflexAgentRole extends AgentRole {
+	
 	private boolean makeTransformNorms = false;
 	protected Hashtable<String, Norm> equivalentNorms = new Hashtable<String, Norm>();
 
-	public ReflexAgentRole(String name, Organization owner, ReflexAgent player)
-	{
+	public ReflexAgentRole(String name, Organization owner, ReflexAgent player) {
 		super(name, owner, player);
 	}
 
-	public boolean getTransformNorms()
-	{
+	public boolean getTransformNorms() {
 		return makeTransformNorms;
 	}
 
-	public void setTransformNorms(boolean transformNorms)
-	{
+	public void setTransformNorms(boolean transformNorms) {
 		makeTransformNorms = transformNorms;
 	}
 
-	protected void transformNorms()
-	{	
-		for( Norm norm : getAllRestrictNorms().values() )
-		{
+	protected void transformNorms() {	
+		for( Norm norm : getAllRestrictNorms().values() ) {
 			List<Norm> equivalentProhibition = obligationToProhibition(norm);
 
-			if( !equivalentProhibition.isEmpty() )
-			{
+			if( !equivalentProhibition.isEmpty() ) {
 				Iterator<Norm> it = equivalentProhibition.iterator();
-				while( it.hasNext() )
-				{
+				while( it.hasNext() ) {
 					Norm temp =  it.next();
 					equivalentNorms.put( temp.getName(), temp );
 				}
-			}
-			else
-			{
+			} else {
 				equivalentNorms.put( norm.getName(), norm );
 			}
 		}
 	}
 
-	protected List<Norm> obligationToProhibition(Norm norm)
-	{
+	protected List<Norm> obligationToProhibition(Norm norm) {
 		List<Norm> equivalentProhibition = new LinkedList<Norm>();
 
-		if(norm.getNormType() == NormType.OBLIGATION)
-		{
+		if(norm.getNormType() == NormType.OBLIGATION) {
 			Norm permissionNorm = new Norm(norm.getName() + "PER", NormType.PERMISSION, norm.getNormResource(), norm.getNormConstraint());
 			equivalentProhibition.add(permissionNorm);
 			
-			for( Norm nor : getAllRestrictNorms().values() )
-			{
-				if( !nor.getName().equalsIgnoreCase( norm.getName() ) )
-				{
+			for( Norm nor : getAllRestrictNorms().values() ) {
+				if( !nor.getName().equalsIgnoreCase( norm.getName() ) ) {
 					Norm prohibitionNorm = new Norm(nor.getName() + "PRO", NormType.PROHIBITION, nor.getNormResource(), nor.getNormConstraint());
 					equivalentProhibition.add(prohibitionNorm);
 				}
@@ -78,28 +65,22 @@ public class ReflexAgentRole extends AgentRole
 	}
 
 	@Override
-	protected void checkingNorms()
-	{
+	public void checkingNorms() {
 		for ( Action action : getAllActions().values() )
 			action.setNormType(null);
 
-		if( makeTransformNorms == true )
-		{
+		if( makeTransformNorms == true ) {
 			transformNorms();
 
-			for( Norm norm : equivalentNorms.values() )
-			{
+			for( Norm norm : equivalentNorms.values() ) {
 				getPlayer().addRestrictNorm(norm.getName(), norm);
 
 				Action action = norm.getNormResource().getAction();
 				if( action != null && getAllActions().containsKey( action.getName() ) )
 					action.setNormType( norm.getNormType() );
 			}
-		}
-		else
-		{
-			for( Norm norm : getAllRestrictNorms().values() )
-			{
+		} else {
+			for( Norm norm : getAllRestrictNorms().values() ) {
 				getPlayer().addRestrictNorm(norm.getName(), norm);
 
 				Action action = norm.getNormResource().getAction();
@@ -110,7 +91,7 @@ public class ReflexAgentRole extends AgentRole
 		}
 	}
 
-	@Override
+	/*@Override
 	public void initializeNorm()
 	{
 		checkingNorms();
@@ -136,5 +117,5 @@ public class ReflexAgentRole extends AgentRole
 				}
 			}
 		}
-	}
+	}*/
 }

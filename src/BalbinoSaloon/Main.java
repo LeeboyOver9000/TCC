@@ -8,6 +8,7 @@ import BalbinoSaloon.Objects.Brand;
 import BalbinoSaloon.agents.client.Client;
 import BalbinoSaloon.agents.waiter.Waiter;
 import BalbinoSaloon.agents.waiter.goals.KeepEnvironmentStraight;
+import BalbinoSaloon.agents.waiter.goals.PutBeersInRefrigerator;
 import jamder.norms.After;
 import jamder.norms.Norm;
 import jamder.norms.NormConstraint;
@@ -31,25 +32,29 @@ public class Main {
 		
 		// Active Norm Constraint
 		Calendar date = new GregorianCalendar(2015, GregorianCalendar.JULY, 10, 0, 0, 0);
-		
 		NormConstraint time = new After(date);
 		constraint.put("Time", time);
 		
-		//ACLMessage message = new ACLMessage(ACLMessage.PROPAGATE);
-		//NormResource nreMessage = new NormResource(message);
-		
 		Goal goal = new KeepEnvironmentStraight();
-		NormResource nreGoal = new NormResource(goal);
-		Norm n1 = new Norm("N1", NormType.PROHIBITION, nreGoal, constraint);
+		NormResource nreGoal1 = new NormResource(goal);
+		Norm n1 = new Norm("N1", NormType.PROHIBITION, nreGoal1, constraint);
 		
-		System.out.println(n1);
+		//Goal goal = new PutBeersInRefrigerator();
+		//NormResource nreGoal2 = new NormResource(goal);
+		//Norm n2 = new Norm("N2", NormType.PROHIBITION, nreGoal2, constraint);
 		
-		Sanction punishment = new Sanction("PN1", n1);
-		punishment.setIntPunishment(new Integer(-30));
-		n1.addSanction("PN1", punishment);
+		Sanction s1 = new Sanction("PN1", n1);
+		s1.setIntPunishment(new Integer(-30));
+		n1.addSanction("PN1", s1);
+		
+		//Sanction s2 = new Sanction("PN2", n2);
+		//s2.setIntPunishment(-30);
+		//n2.addSanction("PN2", s2);
 		
 		ProactiveAgentRole waiterRole = new ProactiveAgentRole("WaitersRole", balbinoOrg, null);
+		//waiterRole.addGoal(goal.getName(), goal);
 		waiterRole.addRestrictNorm("N1", n1);
+		//waiterRole.addRestrictNorm("N2", n2);
 		
 		Waiter waiter = new Waiter("Waiter", balbinoBar, waiterRole, balbinoBar.getRefrigerator(), balbinoBar.getBeers(), balbinoBar.getTables());
 		

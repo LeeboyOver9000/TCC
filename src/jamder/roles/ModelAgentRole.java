@@ -10,41 +10,37 @@ import jamder.structural.Belief;
 
 import java.util.Hashtable;
 
-public class ModelAgentRole extends AgentRole
-{
+public class ModelAgentRole extends AgentRole {
+	
 	public ModelAgentRole(String name, Organization owner, ReflexAgent player) {
 		super(name, owner, player);
 	}
 
 	@Override
-	protected void checkingNorms()
-	{
-		for ( Action action : getAllActions().values() )
+	public void checkingNorms() {
+		/*for ( Action action : getAllActions().values() )
 			action.setNormType(null);
 
 		for( Belief belief : getAllBeliefs().values() )
-			belief.setNormType(null);
+			belief.setNormType(null);*/
 
-		for( Norm norm : getAllRestrictNorms().values() )
-		{
+		for( Norm norm : getAllRestrictNorms().values() ) {
 			getPlayer().addRestrictNorm(norm.getName(), norm);
 
-			Action action = norm.getNormResource().getAction();
+			/*Action action = norm.getNormResource().getAction();
 			Belief belief = norm.getNormResource().getBelief();
 
-			if( action != null && getAllActions().containsKey( action.getName() ) )
-			{	
+			if( action != null && getAllActions().containsKey( action.getName() ) ) {	
 				action.setNormType( norm.getNormType() );
 			}
 
-			if( belief != null && getAllBeliefs().containsKey( belief.getName() ) )
-			{
+			if( belief != null && getAllBeliefs().containsKey( belief.getName() ) ) {
 				belief.setNormType( norm.getNormType() );
-			}
+			}*/
 		}
 	}
 
-	@Override
+	/*@Override
 	public void initializeNorm()
 	{
 		checkingNorms();
@@ -78,5 +74,5 @@ public class ModelAgentRole extends AgentRole
 				getPlayer().addBelief( belief.getName(), belief );
 			}
 		}
-	}
+	}*/
 }

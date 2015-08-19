@@ -29,6 +29,7 @@ import jamder.norms.NormResource;
 import jamder.norms.NormType;
 import jamder.norms.Sanction;
 import jamder.roles.AgentRole;
+import jamder.roles.ProactiveAgentRole;
 import jamder.structural.Belief;
 import jamder.structural.Goal;
 
@@ -38,7 +39,7 @@ public class Waiter extends UtilityAgent {
 	private List<Table> tables;
 	private Refrigerator refrigerator;
 	private List<Beer> beersToSell = new ArrayList<Beer>();
-	private List<Goal> goals = new ArrayList<>();
+	//private List<Goal> goals = new ArrayList<Goal>();
 	
 	// Actions
 	private SellBeer sellBeer;
@@ -56,6 +57,14 @@ public class Waiter extends UtilityAgent {
 		this.beers = beers;
 		this.tables = tables;
 		this.refrigerator = refrigerator;
+		
+		PutBeersInRefrigerator putBeersInRefrigerator = new PutBeersInRefrigerator();
+		AnswerCustomer answerCustomer = new AnswerCustomer();
+		KeepEnvironmentStraight keepEnvironmentStraight = new KeepEnvironmentStraight();
+		
+		addGoal(putBeersInRefrigerator.getName(), putBeersInRefrigerator);
+		addGoal(answerCustomer.getName(), answerCustomer);
+		addGoal(keepEnvironmentStraight.getName(), keepEnvironmentStraight);
 		
 		sellBeer = new SellBeer(this);
 		takeToFreeze = new TakeToFreeze(this);
@@ -95,6 +104,10 @@ public class Waiter extends UtilityAgent {
 			exception.printStackTrace();
 		}
 		
+		for( AgentRole role : getAllAgentRoles().values() ) {
+			role.checkingNorms();
+		}
+		
 		addBehaviour( new Perception(this, 1000) );
 	}
 	
@@ -132,9 +145,9 @@ public class Waiter extends UtilityAgent {
 				
 			}
 			
-			if( !goals.isEmpty() ) {
+			/*if( !goals.isEmpty() ) {
 				goals.clear();
-			}
+			}*/
 			
 			if(tablePropagate > -1 ) {
 				Table t = (Table)nextFunction( tables.get(tablePropagate) );
@@ -150,7 +163,7 @@ public class Waiter extends UtilityAgent {
 			
 			formulateGoalsFunction(null);
 			
-			List<Plan> plans = planning(goals);
+			List<Plan> plans = planning();
 			Plan bestPlan = utilityFunction(plans);
 			//executeNormativePlan( bestPlan );
 			executePlan(bestPlan);
@@ -161,143 +174,123 @@ public class Waiter extends UtilityAgent {
 	protected Belief nextFunction(Belief belief) {
 		if( belief instanceof Table ) {
 			Table table = (Table) belief;
-			
-			for(Belief b : table.getStateOfEachClient().values()) {
-				if( b.getName().equalsIgnoreCase("Drunk") ) {
-					return table;
-				}
-			}
-			
-			for(Belief b : table.getStateOfEachClient().values()) {
-				if( b.getName().equalsIgnoreCase("Waiting") ) {
-					return table;
-				}
-			}
-			
-			for(Belief b : table.getStateOfEachClient().values()) {
-				if( b.getName().equalsIgnoreCase("Drinking") ) {
-					return table;
-				}
-			}
+			addBelief(table.getName(), table);
+			return table;
 		}
 		
 		return null;
 	}
 	
 	@Override
-	protected List<Goal> formulateGoalsFunction(Belief belief) {
+	protected void formulateGoalsFunction(Belief belief) {
 		Table table = (Table)belief;
+		removeAllGoals();
 		
 		if(belief != null) {
 			for( Belief b : table.getStateOfEachClient().values() ) {
 				if( b.getName().equalsIgnoreCase("Drunk") ) {
-					goals.add( new KeepEnvironmentStraight( table ) );
+					//goals.add( new KeepEnvironmentStraight( table ) );
+					addGoal("KeepEnvironmentStraight", new KeepEnvironmentStraight( table ) );
 				}
-			}
-		}
-		
-		if(belief != null) {
-			for( Belief b : table.getStateOfEachClient().values() ) {
+				
 				if( b.getName().equalsIgnoreCase("Waiting") ) {
-					goals.add( new AnswerCustomer( table ) );
+					//goals.add( new AnswerCustomer( table ) );
+					addGoal("AnswerCustomer", new AnswerCustomer( table ) );
 				}
 			}
 		}
 		
 		for(Beer beer : beers) {
 			if(beer.getLocal() == Local.OUTSIDE && beer.getState() == BeerState.WARM) {
-				goals.add(new PutBeersInRefrigerator(beer));
+				//goals.add( new PutBeersInRefrigerator(beer) );
+				addGoal("PutBeersInRefrigerator" + beer.getId(), new PutBeersInRefrigerator(beer) );
 			}
 		}
-		
-		return goals;
 	}
 
 	@Override
-	protected List<Plan> planning(List<Goal> goals) {
+	protected List<Plan> planning() { //FIXME
 		deleteTempNorm();
 		List<Plan> plans = new ArrayList<Plan>();
 		
-		if(goals != null && !goals.isEmpty() ) {
-			for(Goal goal : goals) {
-				goal.setNormType( NormType.PERMISSION );
+		for( Goal goal : getAllGoals().values() ) {
+			goal.setNormType( NormType.PERMISSION );
 				
-				Norm norm = containsNormGoal(goal, NormType.OBLIGATION);
-				if( norm != null ) {
-					goal.setNormType(NormType.OBLIGATION);
+			Norm norm = containsNormGoal(goal, NormType.OBLIGATION);
+			if( norm != null ) {
+				goal.setNormType(NormType.OBLIGATION);
+			} 
+					
+			norm = containsNormGoal(goal, NormType.PROHIBITION);
+			if( norm != null ) {
+				goal.setNormType(NormType.PROHIBITION);
+			}
+				
+			if(goal instanceof KeepEnvironmentStraight) {
+				Plan plan = new Plan(this);
+				kickOutClient.setMessage(propagate);
+				plan.addAction(kickOutClient);
+					
+				if(goal.getNormType() == NormType.OBLIGATION) {
+					//addPlan(goal.getName(), plan);
+					NormResource resource = new NormResource(plan);
+					Norm normTemp = new Norm( goal.getName() + "TEMP", NormType.OBLIGATION, resource, norm.getNormConstraint(), norm.getAllSanction() );
+					insertTempNorm(normTemp);
 				} 
 					
-				norm = containsNormGoal(goal, NormType.PROHIBITION);
-				if( norm != null ) {
-					goal.setNormType(NormType.PROHIBITION);
+				if( goal.getNormType() == NormType.PROHIBITION ) {
+					//addPlan(goal.getName(), plan);
+					NormResource resource = new NormResource(plan);
+					Norm normTemp = new Norm( goal.getName() + "TEMP", NormType.PROHIBITION, resource, norm.getNormConstraint(), norm.getAllSanction() );
+					insertTempNorm(normTemp);
 				}
 				
-				if(goal instanceof KeepEnvironmentStraight) {
-					Plan plan = new Plan(this);
-					kickOutClient.setMessage(propagate);
-					plan.addAction(kickOutClient);
-					
-					if(goal.getNormType() == NormType.OBLIGATION) {
-						addPlan(goal.getName(), plan);
-						NormResource resource = new NormResource(plan);
-						Norm normTemp = new Norm( goal.getName() + "TEMP", NormType.OBLIGATION, resource, norm.getNormConstraint(), norm.getAllSanction() );
-						insertTempNorm(normTemp);
-					} 
-					
-					if( goal.getNormType() == NormType.PROHIBITION ) {
-						addPlan(goal.getName(), plan);
-						NormResource resource = new NormResource(plan);
-						Norm normTemp = new Norm( goal.getName() + "TEMP", NormType.PROHIBITION, resource, norm.getNormConstraint(), norm.getAllSanction() );
-						insertTempNorm(normTemp);
-					}
-					
-					plans.add(plan);
+				plans.add(plan);
+			}
+			
+			if(goal instanceof AnswerCustomer) {
+				Plan plan = new Plan(this);
+				sellBeer.setMessage(request);
+				plan.addAction(sellBeer);
+				
+				if(goal.getNormType() == NormType.OBLIGATION) {
+					//addPlan(goal.getName(), plan);
+					NormResource resource = new NormResource(plan);
+					Norm normTemp = new Norm( goal.getName() + "TEMP", NormType.OBLIGATION, resource, norm.getNormConstraint(), norm.getAllSanction() );
+					insertTempNorm(normTemp);
+				} 
+				
+				if( goal.getNormType() == NormType.PROHIBITION ) {
+					//addPlan(goal.getName(), plan);
+					NormResource resource = new NormResource(plan);
+					Norm normTemp = new Norm( goal.getName() + "TEMP", NormType.PROHIBITION, resource, norm.getNormConstraint(), norm.getAllSanction() );
+					insertTempNorm(normTemp);
 				}
 				
-				if(goal instanceof AnswerCustomer) {
-					Plan plan = new Plan(this);
-					sellBeer.setMessage(request);
-					plan.addAction(sellBeer);
-					
-					if(goal.getNormType() == NormType.OBLIGATION) {
-						addPlan(goal.getName(), plan);
-						NormResource resource = new NormResource(plan);
-						Norm normTemp = new Norm( goal.getName() + "TEMP", NormType.OBLIGATION, resource, norm.getNormConstraint(), norm.getAllSanction() );
-						insertTempNorm(normTemp);
-					} 
-					
-					if( goal.getNormType() == NormType.PROHIBITION ) {
-						addPlan(goal.getName(), plan);
-						NormResource resource = new NormResource(plan);
-						Norm normTemp = new Norm( goal.getName() + "TEMP", NormType.PROHIBITION, resource, norm.getNormConstraint(), norm.getAllSanction() );
-						insertTempNorm(normTemp);
-					}
-					
-					plans.add(plan);
+				plans.add(plan);
+			}
+			
+			if(goal instanceof PutBeersInRefrigerator) {
+				Plan plan = new Plan(this);
+				Beer beer = ((PutBeersInRefrigerator)goal).getBeer();
+				takeToFreeze.setBeer(beer);
+				plan.addAction(takeToFreeze);
+				
+				if(goal.getNormType() == NormType.OBLIGATION) {
+					//addPlan(goal.getName(), plan);
+					NormResource resource = new NormResource(plan);
+					Norm normTemp = new Norm( goal.getName() + "TEMP", NormType.OBLIGATION, resource, norm.getNormConstraint(), norm.getAllSanction() );
+					insertTempNorm(normTemp);
+				} 
+				
+				if( goal.getNormType() == NormType.PROHIBITION ) {
+					//addPlan(goal.getName(), plan);
+					NormResource resource = new NormResource(plan);
+					Norm normTemp = new Norm( goal.getName() + "TEMP", NormType.PROHIBITION, resource, norm.getNormConstraint(), norm.getAllSanction() );
+					insertTempNorm(normTemp);
 				}
 				
-				if(goal instanceof PutBeersInRefrigerator) {
-					Plan plan = new Plan(this);
-					Beer beer = ((PutBeersInRefrigerator)goal).getBeer();
-					takeToFreeze.setBeer(beer);
-					plan.addAction(takeToFreeze);
-					
-					if(goal.getNormType() == NormType.OBLIGATION) {
-						addPlan(goal.getName(), plan);
-						NormResource resource = new NormResource(plan);
-						Norm normTemp = new Norm( goal.getName() + "TEMP", NormType.OBLIGATION, resource, norm.getNormConstraint(), norm.getAllSanction() );
-						insertTempNorm(normTemp);
-					} 
-					
-					if( goal.getNormType() == NormType.PROHIBITION ) {
-						addPlan(goal.getName(), plan);
-						NormResource resource = new NormResource(plan);
-						Norm normTemp = new Norm( goal.getName() + "TEMP", NormType.PROHIBITION, resource, norm.getNormConstraint(), norm.getAllSanction() );
-						insertTempNorm(normTemp);
-					}
-					
-					plans.add(plan);
-				}
+				plans.add(plan);
 			}
 		}
 		
@@ -315,7 +308,6 @@ public class Waiter extends UtilityAgent {
 			for(Norm norm : getAllTempNorms().values() ) {
 				
 				Plan p = norm.getNormResource().getPlan();
-				System.out.println(getAllActions());
 				if ( p!=null && p.isEqual(plan) && norm.getNormType() == NormType.OBLIGATION && norm.isActive() ) {
 					
 					for(Sanction s : norm.getAllSanction().values() ) {
@@ -325,9 +317,9 @@ public class Waiter extends UtilityAgent {
 			}
 			
 			if( plan.getCost() + sanctionCost > best) {
+				best = plan.getCost() + sanctionCost;
 				bestPlan = plan;
 			}
-			
 		}
 		
 		/*
@@ -336,6 +328,7 @@ public class Waiter extends UtilityAgent {
 		
 		for(Plan plan : plans) {
 			if(plan.getCost() > best) {
+				best = plan.getCost();
 				bestPlan = plan;
 			}
 		}

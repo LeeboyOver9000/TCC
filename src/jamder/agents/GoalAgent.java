@@ -14,7 +14,7 @@ import jamder.structural.Goal;
 import java.util.Hashtable;
 import java.util.List;
 
-public abstract class GoalAgent extends GenericAgent 
+public abstract class GoalAgent extends GenericAgent
 {
 	private Hashtable<String, Action> keyActions = new Hashtable<String, Action>();
 	private Hashtable<String, Plan> plans = new Hashtable<String, Plan>();

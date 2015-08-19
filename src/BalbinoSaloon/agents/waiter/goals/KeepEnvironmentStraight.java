@@ -9,11 +9,11 @@ public class KeepEnvironmentStraight extends Goal {
 	private Table table;
 	
 	public KeepEnvironmentStraight() {
-		setName("KeepEnvironmentStraight");
-		this.table = null;
+		this(null);
 	}
 	
 	public KeepEnvironmentStraight(Table table) {
+		setName("KeepEnvironmentStraight");
 		this.table = table;
 		setAchieved(false);
 	}

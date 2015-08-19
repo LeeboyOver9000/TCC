@@ -23,7 +23,9 @@ public class Plan extends SequentialBehaviour {
 	// Cost
 	public int getCost() {
 		cost = 0;
-		for(Action action : actions) { cost += action.getCost(); }
+		for(Action action : actions) { 
+			cost += action.getCost();
+		}
 		return cost; 
 	}
 	public void setCost(int cost) { this.cost = cost; }

@@ -5,31 +5,29 @@ import jamder.agents.GenericAgent;
 import jamder.behavioural.Action;
 import jamder.norms.Norm;
 import jamder.structural.Belief;
+import jamder.structural.Goal;
 
 import java.util.Hashtable;
 
-public abstract class AgentRole
-{
+public abstract class AgentRole {
+	
 	private String name;
 	private GenericAgent player;
 	private Organization owner;
 	
 	private Hashtable<String, Action> actions = new Hashtable<String, Action>();
 	private Hashtable<String, Belief> beliefs = new Hashtable<String, Belief>();
-
+	
 	protected Hashtable<String, Norm> restrictNorms = new Hashtable<String, Norm>();
 	
-	public AgentRole(String name, Organization owner, GenericAgent player)
-	{
+	public AgentRole(String name, Organization owner, GenericAgent player) {
 		setName( name );
 		setOwner( owner );
 		this.owner.addAgentRole( name, this );
 		
-		if(player != null)
-		{
+		if(player != null) {
 			setPlayer( player );
-			if(player instanceof Organization)
-			{
+			if(player instanceof Organization) {
 				Organization subOrg = (Organization) player;
 				subOrg.setSuperOrganization( owner );
 				subOrg.getSuperOrganization().addSubOrganization(subOrg.getName(), subOrg);
@@ -70,6 +68,6 @@ public abstract class AgentRole
 	protected void removeAllRestrictNorms() { restrictNorms.clear(); }
 	protected Hashtable<String, Norm> getAllRestrictNorms() { return restrictNorms; }
 	
-	protected abstract void checkingNorms();
-	public abstract void initializeNorm();
+	public abstract void checkingNorms();
+	//public abstract void initializeNorm();
 }

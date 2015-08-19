@@ -41,7 +41,6 @@ public class Hunter extends GoalAgent
 	
 	// Goals
 	private GetTheGold getGold;
-	private MakeTheTour tour;
 	private KillTheWumpus killWumpus;
 	private LeaveTheCave leaveCave;
 	
@@ -169,7 +168,7 @@ public class Hunter extends GoalAgent
 	@Override
 	protected void setup() {
 		for( AgentRole role : getAllAgentRoles().values() ) {
-			role.initializeNorm();
+			role.checkingNorms();
 		}
 		
 		addBehaviour( new Perception(this, 1000) );

@@ -9,7 +9,12 @@ import BalbinoSaloon.agents.client.Client;
 public class AnswerCustomer extends Goal {
 	private Table table;
 	
+	public AnswerCustomer() {
+		this(null);
+	}
+	
 	public AnswerCustomer(Table table) {
+		setName("AnswerCustomer");
 		this.table = table;
 		setAchieved(false);
 	}
@@ -18,7 +23,7 @@ public class AnswerCustomer extends Goal {
 	public boolean isAchieved() {
 		Belief clientStateGoal = new Belief("Drinking");
 		
-		if( !table.isFree() ) {
+		if( table != null && !table.isFree() ) {
 			for( Client client : table.getClients() ) {
 				if( !table.getClientState(client).getName().equalsIgnoreCase( clientStateGoal.getName() ))
 					return false;

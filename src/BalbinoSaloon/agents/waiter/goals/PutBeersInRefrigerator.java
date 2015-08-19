@@ -6,9 +6,15 @@ import BalbinoSaloon.Objects.Local;
 import jamder.structural.Goal;
 
 public class PutBeersInRefrigerator extends Goal {
+	
 	private Beer beer;
 	
+	public PutBeersInRefrigerator() {
+		this(null);
+	}
+	
 	public PutBeersInRefrigerator(Beer beer) {
+		setName("PutBeersInRefrigerator");
 		this.beer = beer;
 		setAchieved(false);
 	}
