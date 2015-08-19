@@ -36,8 +36,7 @@ public class SellBeer extends Action
 		
 		if(beerType.equals("A")) {
 			brand = Brand.A;
-		}
-		else {
+		} else {
 			brand = Brand.B;
 		}
 		

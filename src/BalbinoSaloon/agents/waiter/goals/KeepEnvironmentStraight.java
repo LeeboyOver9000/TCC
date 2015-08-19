@@ -6,19 +6,19 @@ import jamder.structural.Belief;
 import jamder.structural.Goal;
 
 public class KeepEnvironmentStraight extends Goal {
-	private Table table;
+	//private Table table;
 	
 	public KeepEnvironmentStraight() {
-		this(null);
+		setName("KeepEnvironmentStraight");
 	}
 	
-	public KeepEnvironmentStraight(Table table) {
+	/*public KeepEnvironmentStraight(Table table) {
 		setName("KeepEnvironmentStraight");
 		this.table = table;
 		setAchieved(false);
-	}
+	}*/
 	
-	@Override
+	/*@Override
 	public boolean isAchieved() {
 		Belief clientStateGoal = new Belief("Drunk");
 		
@@ -31,8 +31,8 @@ public class KeepEnvironmentStraight extends Goal {
 		}
 		
 		return true;
-	}
+	}*/
 	
-	public Table getTable() { return table;	}
-	public void setTable(Table table) { this.table = table; }
+	/*public Table getTable() { return table;	}
+	public void setTable(Table table) { this.table = table; }*/
 }

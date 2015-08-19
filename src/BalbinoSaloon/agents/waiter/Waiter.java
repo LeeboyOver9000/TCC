@@ -6,6 +6,7 @@ import java.util.List;
 import BalbinoSaloon.Table;
 import BalbinoSaloon.Objects.Beer;
 import BalbinoSaloon.Objects.BeerState;
+import BalbinoSaloon.Objects.Brand;
 import BalbinoSaloon.Objects.Local;
 import BalbinoSaloon.Objects.Refrigerator;
 import BalbinoSaloon.agents.waiter.actions.KickOutClient;
@@ -39,7 +40,11 @@ public class Waiter extends UtilityAgent {
 	private List<Table> tables;
 	private Refrigerator refrigerator;
 	private List<Beer> beersToSell = new ArrayList<Beer>();
-	//private List<Goal> goals = new ArrayList<Goal>();
+	private List<Goal> goals = new ArrayList<Goal>();
+	
+	AnswerCustomer answerCustomer = new AnswerCustomer();
+	PutBeersInRefrigerator putBeersInRefrigerator = new PutBeersInRefrigerator();
+	KeepEnvironmentStraight keepEnvironmentStraight = new KeepEnvironmentStraight();
 	
 	// Actions
 	private SellBeer sellBeer;
@@ -58,13 +63,10 @@ public class Waiter extends UtilityAgent {
 		this.tables = tables;
 		this.refrigerator = refrigerator;
 		
-		PutBeersInRefrigerator putBeersInRefrigerator = new PutBeersInRefrigerator();
-		AnswerCustomer answerCustomer = new AnswerCustomer();
-		KeepEnvironmentStraight keepEnvironmentStraight = new KeepEnvironmentStraight();
-		
+		/*
 		addGoal(putBeersInRefrigerator.getName(), putBeersInRefrigerator);
 		addGoal(answerCustomer.getName(), answerCustomer);
-		addGoal(keepEnvironmentStraight.getName(), keepEnvironmentStraight);
+		addGoal(keepEnvironmentStraight.getName(), keepEnvironmentStraight);*/
 		
 		sellBeer = new SellBeer(this);
 		takeToFreeze = new TakeToFreeze(this);
@@ -121,49 +123,34 @@ public class Waiter extends UtilityAgent {
 	}
 	
 	private class Perception extends Sensor {	
-		private Waiter agent;
 		
 		protected Perception(Waiter agent, int time) {
 			super(agent, time);
-			this.agent = agent;
 		}
 		
 		@Override
 		protected void onTick() {
+			eraseGoals();
+			
 			request = myAgent.receive(mtr);
 			propagate = myAgent.receive(mtp);
 			
-			int tablePropagate = -1;
 			if(propagate != null) {
-				tablePropagate = Integer.parseInt(propagate.getContent()) - 1;
-			}
-			
-			int tableRequest = -1;
-			if(request != null) {
-				String[] content = request.getContent().split(" ");
-				tableRequest = Integer.parseInt( content[1] ) - 1;
-				
-			}
-			
-			/*if( !goals.isEmpty() ) {
-				goals.clear();
-			}*/
-			
-			if(tablePropagate > -1 ) {
-				Table t = (Table)nextFunction( tables.get(tablePropagate) );
+				Table t = (Table)nextFunction( tables.get( Integer.parseInt(propagate.getContent())-1 ) );
 				//normProcessBelief(t);
-				formulateGoalsFunction(t);
-			}
-			
-			if(tableRequest > -1) {
-				Table t = (Table)nextFunction( tables.get(tableRequest) );
-				//normProcessBelief(t);
-				formulateGoalsFunction(t);
+				formulateGoalsFunction(t, propagate);
 			} 
+				
+			if (request != null) {
+				String[] content = request.getContent().split(" ");
+				Table t = (Table)nextFunction( tables.get( Integer.parseInt( content[1] )-1 ) );
+				//normProcessBelief(t);
+				formulateGoalsFunction(t, request);
+			}
 			
-			formulateGoalsFunction(null);
+			formulateGoalsFunction(null, null);
 			
-			List<Plan> plans = planning();
+			List<Plan> plans = planning(goals);
 			Plan bestPlan = utilityFunction(plans);
 			//executeNormativePlan( bestPlan );
 			executePlan(bestPlan);
@@ -181,116 +168,129 @@ public class Waiter extends UtilityAgent {
 		return null;
 	}
 	
-	@Override
-	protected void formulateGoalsFunction(Belief belief) {
+	protected void formulateGoalsFunction(Belief belief, ACLMessage message) {
 		Table table = (Table)belief;
-		removeAllGoals();
 		
 		if(belief != null) {
 			for( Belief b : table.getStateOfEachClient().values() ) {
 				if( b.getName().equalsIgnoreCase("Drunk") ) {
-					//goals.add( new KeepEnvironmentStraight( table ) );
-					addGoal("KeepEnvironmentStraight", new KeepEnvironmentStraight( table ) );
-				}
-				
-				if( b.getName().equalsIgnoreCase("Waiting") ) {
-					//goals.add( new AnswerCustomer( table ) );
-					addGoal("AnswerCustomer", new AnswerCustomer( table ) );
+					goals.add( keepEnvironmentStraight );
+					//addGoal("KeepEnvironmentStraight", new KeepEnvironmentStraight( table ) );
 				}
 			}
 		}
 		
-		for(Beer beer : beers) {
-			if(beer.getLocal() == Local.OUTSIDE && beer.getState() == BeerState.WARM) {
-				//goals.add( new PutBeersInRefrigerator(beer) );
-				addGoal("PutBeersInRefrigerator" + beer.getId(), new PutBeersInRefrigerator(beer) );
+		if(belief != null && message != null) {
+			for( Belief b : table.getStateOfEachClient().values() ) {
+				
+				String[] content = message.getContent().split(" ");
+				String beerType = content[0];
+				
+				Brand brand = null;
+				if(beerType.equals("A")) {
+					brand = Brand.A;
+				} else {
+					brand = Brand.B;
+				}
+				
+				if( b.getName().equalsIgnoreCase("Waiting") && refrigerator.thereIsIcedBeer(brand)) {
+					goals.add( answerCustomer );
+					//addGoal("AnswerCustomer", new AnswerCustomer( table ) );
+				}
+			}
+		}
+		
+		if(belief == null && message == null) {
+			for(Beer beer : beers) {
+				if(beer.getLocal() == Local.OUTSIDE && beer.getState() == BeerState.WARM) {
+					putBeersInRefrigerator.setBeer(beer);
+					goals.add(putBeersInRefrigerator);
+					break;
+					//addGoal("PutBeersInRefrigerator" + beer.getId(), new PutBeersInRefrigerator(beer) );
+				}
 			}
 		}
 	}
 
 	@Override
-	protected List<Plan> planning() { //FIXME
+	protected List<Plan> planning(List<Goal> goals) {
 		deleteTempNorm();
 		List<Plan> plans = new ArrayList<Plan>();
 		
-		for( Goal goal : getAllGoals().values() ) {
-			goal.setNormType( NormType.PERMISSION );
-				
-			Norm norm = containsNormGoal(goal, NormType.OBLIGATION);
-			if( norm != null ) {
-				goal.setNormType(NormType.OBLIGATION);
-			} 
+		if(goals != null && !goals.isEmpty() ) {
+			for( Goal goal : goals ) {
+				goal.setNormType( NormType.PERMISSION );
 					
-			norm = containsNormGoal(goal, NormType.PROHIBITION);
-			if( norm != null ) {
-				goal.setNormType(NormType.PROHIBITION);
-			}
-				
-			if(goal instanceof KeepEnvironmentStraight) {
-				Plan plan = new Plan(this);
-				kickOutClient.setMessage(propagate);
-				plan.addAction(kickOutClient);
-					
-				if(goal.getNormType() == NormType.OBLIGATION) {
-					//addPlan(goal.getName(), plan);
-					NormResource resource = new NormResource(plan);
-					Norm normTemp = new Norm( goal.getName() + "TEMP", NormType.OBLIGATION, resource, norm.getNormConstraint(), norm.getAllSanction() );
-					insertTempNorm(normTemp);
+				Norm norm = containsNormGoal(goal, NormType.OBLIGATION);
+				if( norm != null ) {
+					goal.setNormType(NormType.OBLIGATION);
 				} 
+						
+				norm = containsNormGoal(goal, NormType.PROHIBITION);
+				if( norm != null ) {
+					goal.setNormType(NormType.PROHIBITION);
+				}
 					
-				if( goal.getNormType() == NormType.PROHIBITION ) {
-					//addPlan(goal.getName(), plan);
-					NormResource resource = new NormResource(plan);
-					Norm normTemp = new Norm( goal.getName() + "TEMP", NormType.PROHIBITION, resource, norm.getNormConstraint(), norm.getAllSanction() );
-					insertTempNorm(normTemp);
+				if(goal instanceof KeepEnvironmentStraight) {
+					Plan plan = new Plan(this);
+					kickOutClient.setMessage(propagate);
+					plan.addAction(kickOutClient);
+					
+					if( goal.getNormType() == NormType.PROHIBITION ) {
+						//addPlan(goal.getName(), plan);
+						NormResource resource = new NormResource(plan);
+						Norm normTemp = new Norm( goal.getName() + "TEMP", NormType.PROHIBITION, resource, norm.getNormConstraint(), norm.getAllSanction() );
+						insertTempNorm(normTemp);
+					} else if(goal.getNormType() == NormType.OBLIGATION) {
+						//addPlan(goal.getName(), plan);
+						NormResource resource = new NormResource(plan);
+						Norm normTemp = new Norm( goal.getName() + "TEMP", NormType.OBLIGATION, resource, norm.getNormConstraint(), norm.getAllSanction() );
+						insertTempNorm(normTemp);
+					}
+					
+					plans.add(plan);
 				}
 				
-				plans.add(plan);
-			}
-			
-			if(goal instanceof AnswerCustomer) {
-				Plan plan = new Plan(this);
-				sellBeer.setMessage(request);
-				plan.addAction(sellBeer);
-				
-				if(goal.getNormType() == NormType.OBLIGATION) {
-					//addPlan(goal.getName(), plan);
-					NormResource resource = new NormResource(plan);
-					Norm normTemp = new Norm( goal.getName() + "TEMP", NormType.OBLIGATION, resource, norm.getNormConstraint(), norm.getAllSanction() );
-					insertTempNorm(normTemp);
-				} 
-				
-				if( goal.getNormType() == NormType.PROHIBITION ) {
-					//addPlan(goal.getName(), plan);
-					NormResource resource = new NormResource(plan);
-					Norm normTemp = new Norm( goal.getName() + "TEMP", NormType.PROHIBITION, resource, norm.getNormConstraint(), norm.getAllSanction() );
-					insertTempNorm(normTemp);
+				if(goal instanceof AnswerCustomer) {
+					Plan plan = new Plan(this);
+					sellBeer.setMessage(request);
+					plan.addAction(sellBeer);
+					
+					if( goal.getNormType() == NormType.PROHIBITION ) {
+						//addPlan(goal.getName(), plan);
+						NormResource resource = new NormResource(plan);
+						Norm normTemp = new Norm( goal.getName() + "TEMP", NormType.PROHIBITION, resource, norm.getNormConstraint(), norm.getAllSanction() );
+						insertTempNorm(normTemp);
+					} else if(goal.getNormType() == NormType.OBLIGATION) {
+						//addPlan(goal.getName(), plan);
+						NormResource resource = new NormResource(plan);
+						Norm normTemp = new Norm( goal.getName() + "TEMP", NormType.OBLIGATION, resource, norm.getNormConstraint(), norm.getAllSanction() );
+						insertTempNorm(normTemp);
+					} 
+					
+					plans.add(plan);
 				}
 				
-				plans.add(plan);
-			}
-			
-			if(goal instanceof PutBeersInRefrigerator) {
-				Plan plan = new Plan(this);
-				Beer beer = ((PutBeersInRefrigerator)goal).getBeer();
-				takeToFreeze.setBeer(beer);
-				plan.addAction(takeToFreeze);
-				
-				if(goal.getNormType() == NormType.OBLIGATION) {
-					//addPlan(goal.getName(), plan);
-					NormResource resource = new NormResource(plan);
-					Norm normTemp = new Norm( goal.getName() + "TEMP", NormType.OBLIGATION, resource, norm.getNormConstraint(), norm.getAllSanction() );
-					insertTempNorm(normTemp);
-				} 
-				
-				if( goal.getNormType() == NormType.PROHIBITION ) {
-					//addPlan(goal.getName(), plan);
-					NormResource resource = new NormResource(plan);
-					Norm normTemp = new Norm( goal.getName() + "TEMP", NormType.PROHIBITION, resource, norm.getNormConstraint(), norm.getAllSanction() );
-					insertTempNorm(normTemp);
+				if(goal instanceof PutBeersInRefrigerator) {
+					Plan plan = new Plan(this);
+					Beer beer = ((PutBeersInRefrigerator)goal).getBeer();
+					takeToFreeze.setBeer(beer);
+					plan.addAction(takeToFreeze);
+					
+					if( goal.getNormType() == NormType.PROHIBITION ) {
+						//addPlan(goal.getName(), plan);
+						NormResource resource = new NormResource(plan);
+						Norm normTemp = new Norm( goal.getName() + "TEMP", NormType.PROHIBITION, resource, norm.getNormConstraint(), norm.getAllSanction() );
+						insertTempNorm(normTemp);
+					} else if(goal.getNormType() == NormType.OBLIGATION) {
+						//addPlan(goal.getName(), plan);
+						NormResource resource = new NormResource(plan);
+						Norm normTemp = new Norm( goal.getName() + "TEMP", NormType.OBLIGATION, resource, norm.getNormConstraint(), norm.getAllSanction() );
+						insertTempNorm(normTemp);
+					}
+					
+					plans.add(plan);
 				}
-				
-				plans.add(plan);
 			}
 		}
 		
@@ -301,40 +301,66 @@ public class Waiter extends UtilityAgent {
 	protected Plan utilityFunction(List<Plan> plans) {
 		Plan bestPlan = null;
 		
-		int best = 0;
+		int bestCost = 0;
+		//int sanction = 0; // FIXME
 		for(Plan plan : plans) {
 			
-			int sanctionCost = 0;
+			int obligationSanctionCost = 0;
+			int prohibitionSanctionCost = 0;
+			
 			for(Norm norm : getAllTempNorms().values() ) {
 				
 				Plan p = norm.getNormResource().getPlan();
+				
+				if ( p!=null && p.isEqual(plan) && norm.getNormType() == NormType.PROHIBITION && norm.isActive() ) {
+					
+					for(Sanction s : norm.getAllSanction().values() ) {
+						prohibitionSanctionCost += s.getIntPunishment();
+					}
+				}
+				
 				if ( p!=null && p.isEqual(plan) && norm.getNormType() == NormType.OBLIGATION && norm.isActive() ) {
 					
 					for(Sanction s : norm.getAllSanction().values() ) {
-						 sanctionCost += s.getIntPunishment() + s.getIntReward();
+						obligationSanctionCost += s.getIntPunishment() + s.getIntReward();
 					}
 				}
 			}
 			
-			if( plan.getCost() + sanctionCost > best) {
-				best = plan.getCost() + sanctionCost;
+			/*if( prohibitionSanctionCost + obligationSanctionCost > 0) { //FIXME
+				sanction = prohibitionSanctionCost + obligationSanctionCost;
+			}*/
+			
+			if( plan.getCost() + prohibitionSanctionCost + obligationSanctionCost > bestCost) {
+				bestCost = plan.getCost() + prohibitionSanctionCost + obligationSanctionCost;
 				bestPlan = plan;
 			}
 		}
 		
 		/*
 		Plan bestPlan = null;
-		int best = 0;
+		int bestCost = 0;
 		
 		for(Plan plan : plans) {
 			if(plan.getCost() > best) {
-				best = plan.getCost();
+				bestCost = plan.getCost();
 				bestPlan = plan;
 			}
 		}
 		*/
 		
+		/*System.out.println(sanction); //FIXME
+		System.out.println(bestPlan);// FIXME
+		System.out.println(bestCost);// FIXME
+		*/
+		
 		return bestPlan;
+	}
+	
+	private void eraseGoals() {
+		if( !goals.isEmpty() ) {
+			goals.clear();
+		}
 	}
 	
 	@Override

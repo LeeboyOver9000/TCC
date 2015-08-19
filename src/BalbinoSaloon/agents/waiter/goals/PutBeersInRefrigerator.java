@@ -10,23 +10,23 @@ public class PutBeersInRefrigerator extends Goal {
 	private Beer beer;
 	
 	public PutBeersInRefrigerator() {
-		this(null);
+		setName("PutBeersInRefrigerator");
 	}
 	
-	public PutBeersInRefrigerator(Beer beer) {
+	/*public PutBeersInRefrigerator(Beer beer) {
 		setName("PutBeersInRefrigerator");
 		this.beer = beer;
 		setAchieved(false);
-	}
+	}*/
 	
-	@Override
+	/*@Override
 	public boolean isAchieved() {
 		if( beer.getLocal() == Local.INSIDE || beer.getState() == BeerState.ICED ) {
 			return true;
 		}
 		
 		return false;
-	}
+	}*/
 
 	public Beer getBeer() { return beer; }
 	public void setBeer(Beer beer) { this.beer = beer; }

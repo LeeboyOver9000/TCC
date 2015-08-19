@@ -7,6 +7,7 @@ import java.util.Hashtable;
 import BalbinoSaloon.Objects.Brand;
 import BalbinoSaloon.agents.client.Client;
 import BalbinoSaloon.agents.waiter.Waiter;
+import BalbinoSaloon.agents.waiter.goals.AnswerCustomer;
 import BalbinoSaloon.agents.waiter.goals.KeepEnvironmentStraight;
 import BalbinoSaloon.agents.waiter.goals.PutBeersInRefrigerator;
 import jamder.norms.After;
@@ -35,26 +36,36 @@ public class Main {
 		NormConstraint time = new After(date);
 		constraint.put("Time", time);
 		
-		Goal goal = new KeepEnvironmentStraight();
-		NormResource nreGoal1 = new NormResource(goal);
+		// Norms for Goals
+		Goal goal1 = new KeepEnvironmentStraight();
+		NormResource nreGoal1 = new NormResource(goal1);
 		Norm n1 = new Norm("N1", NormType.PROHIBITION, nreGoal1, constraint);
 		
-		//Goal goal = new PutBeersInRefrigerator();
-		//NormResource nreGoal2 = new NormResource(goal);
-		//Norm n2 = new Norm("N2", NormType.PROHIBITION, nreGoal2, constraint);
+		Goal goal2 = new PutBeersInRefrigerator();
+		NormResource nreGoal2 = new NormResource(goal2);
+		Norm n2 = new Norm("N2", NormType.PROHIBITION, nreGoal2, constraint);
 		
+		Goal goal3 = new AnswerCustomer();
+		NormResource nreGoal3 = new NormResource(goal3);
+		Norm n3 = new Norm("N3", NormType.PROHIBITION, nreGoal3, constraint);
+		
+		// Sanctions for Goals
 		Sanction s1 = new Sanction("PN1", n1);
-		s1.setIntPunishment(new Integer(-30));
+		s1.setIntPunishment( Integer.MIN_VALUE );
 		n1.addSanction("PN1", s1);
 		
-		//Sanction s2 = new Sanction("PN2", n2);
-		//s2.setIntPunishment(-30);
-		//n2.addSanction("PN2", s2);
+		Sanction s2 = new Sanction("PN2", n2);
+		s2.setIntPunishment( Integer.MIN_VALUE );
+		n2.addSanction("PN2", s2);
+		
+		Sanction s3 = new Sanction("PN3", n3);
+		s3.setIntPunishment( Integer.MIN_VALUE );
+		n3.addSanction("PN3", s3);
 		
 		ProactiveAgentRole waiterRole = new ProactiveAgentRole("WaitersRole", balbinoOrg, null);
-		//waiterRole.addGoal(goal.getName(), goal);
-		waiterRole.addRestrictNorm("N1", n1);
+		//waiterRole.addRestrictNorm("N1", n1);
 		//waiterRole.addRestrictNorm("N2", n2);
+		waiterRole.addRestrictNorm("N3", n3);
 		
 		Waiter waiter = new Waiter("Waiter", balbinoBar, waiterRole, balbinoBar.getRefrigerator(), balbinoBar.getBeers(), balbinoBar.getTables());
 		

@@ -9,8 +9,8 @@ import BalbinoSaloon.agents.client.Client;
 import BalbinoSaloon.agents.waiter.Waiter;
 import jamder.structural.Belief;
 
-public class Table extends Belief
-{
+public class Table extends Belief {
+	
 	private int tableID;
 	private Waiter responsible;
 	private Calendar LastAttendance;
@@ -54,10 +54,8 @@ public class Table extends Belief
 	}
 	
 	public void leave(Client client) {
-		for(Client c : clients)
-		{
-			if( c.getLocalName().equalsIgnoreCase( client.getLocalName() ) )
-			{
+		for(Client c : clients) {
+			if( c.getLocalName().equalsIgnoreCase( client.getLocalName() ) ) {
 				client.setTable(null);
 				clients.remove(client);
 				break;

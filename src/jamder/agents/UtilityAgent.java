@@ -20,10 +20,10 @@ public abstract class UtilityAgent extends GoalAgent {
 	}
 	
 	// Recebe uma crença e retorna uma lista de objetivos
-	protected abstract void formulateGoalsFunction(Belief belief);
+	//protected abstract void formulateGoalsFunction(Belief belief);
 	
 	// Utiliza os objetivos normativos do Agente Orientado a Objetivo e retorna os planos para alcança-los
-	protected abstract List<Plan> planning();
+	protected abstract List<Plan> planning(List<Goal> goals);
 	
 	// Recebe um lista de planos e retorna o Plano com melhor custo
 	protected abstract Plan utilityFunction(List<Plan> plans);

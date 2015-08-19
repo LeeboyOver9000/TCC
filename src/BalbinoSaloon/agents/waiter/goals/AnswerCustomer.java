@@ -7,19 +7,19 @@ import BalbinoSaloon.Table;
 import BalbinoSaloon.agents.client.Client;
 
 public class AnswerCustomer extends Goal {
-	private Table table;
+	//private Table table;
 	
 	public AnswerCustomer() {
-		this(null);
+		setName("AnswerCustomer");
 	}
 	
-	public AnswerCustomer(Table table) {
+	/*public AnswerCustomer(Table table) {
 		setName("AnswerCustomer");
 		this.table = table;
 		setAchieved(false);
-	}
+	}*/
 	
-	@Override
+	/*@Override
 	public boolean isAchieved() {
 		Belief clientStateGoal = new Belief("Drinking");
 		
@@ -31,8 +31,8 @@ public class AnswerCustomer extends Goal {
 		}
 		
 		return true;
-	}
+	}*/
 	
-	public Table getTable() { return table;	}
-	public void setTable(Table table) { this.table = table; }
+	/*public Table getTable() { return table;	}
+	public void setTable(Table table) { this.table = table; }*/
 }

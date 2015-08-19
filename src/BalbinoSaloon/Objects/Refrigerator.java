@@ -44,14 +44,10 @@ public class Refrigerator
 		}
 	}
 	
-	public Beer getBeer(Brand brand)
-	{	
-		if( brand == Brand.A && !beers_brand_A.isEmpty() )
-		{
-			for(Beer beer : beers_brand_A)
-			{
-				if( beer.getState() == BeerState.ICED )
-				{	
+	public Beer getBeer(Brand brand) {	
+		if( brand == Brand.A && !beers_brand_A.isEmpty() ) {
+			for(Beer beer : beers_brand_A) {
+				if( beer.getState() == BeerState.ICED ) {	
 					int index = beers_brand_A.indexOf(beer);
 					beer.setLocal(Local.OUTSIDE);
 					beer.startTimeToWarm();
@@ -60,12 +56,9 @@ public class Refrigerator
 			}
 		}
 		
-		if( brand == Brand.B && !beers_brand_B.isEmpty() )
-		{
-			for(Beer beer : beers_brand_B)
-			{
-				if(beer.getState() == BeerState.ICED)
-				{
+		if( brand == Brand.B && !beers_brand_B.isEmpty() ) {
+			for(Beer beer : beers_brand_B) {
+				if(beer.getState() == BeerState.ICED) {
 					int index = beers_brand_B.indexOf(beer);
 					beer.setLocal(Local.OUTSIDE);
 					beer.startTimeToWarm();
@@ -75,5 +68,25 @@ public class Refrigerator
 		}
 		
 		return null;
+	}
+	
+	public boolean thereIsIcedBeer(Brand brand) {
+		if( brand != null && brand == Brand.A && !beers_brand_A.isEmpty() ) {
+			for(Beer beer : beers_brand_A) {
+				if( beer.getState() == BeerState.ICED ) {	
+					return true;
+				}
+			}
+		}
+		
+		if( brand != null && brand == Brand.B && !beers_brand_B.isEmpty() ) {
+			for(Beer beer : beers_brand_B) {
+				if(beer.getState() == BeerState.ICED) {
+					return true;
+				}
+			}
+		}
+		
+		return false;
 	}
 }
