@@ -19,7 +19,9 @@ public abstract class GoalAgent extends GenericAgent
 	private Hashtable<String, Action> keyActions = new Hashtable<String, Action>();
 	private Hashtable<String, Plan> plans = new Hashtable<String, Plan>();
 	private Hashtable<String, Belief> beliefs = new Hashtable<String, Belief>();
-	protected Hashtable<String, Norm> restrictTempNorms = new Hashtable<String, Norm>();
+	protected Hashtable<String, Norm> restrictBeliefTempNorms = new Hashtable<String, Norm>();
+	protected Hashtable<String, Norm> restrictGoalTempNorms = new Hashtable<String, Norm>();
+	protected Hashtable<String, Norm> restrictPlanTempNorms = new Hashtable<String, Norm>();
 	
 	private Goal mainGoal = null;
 	private Goal goalRunning = null;
@@ -72,10 +74,20 @@ public abstract class GoalAgent extends GenericAgent
 	public void removeAllPlans() { plans.clear(); }
 	public Hashtable<String, Plan> getAllPlans() { return plans; }
 	
-	// Temporary Norms
-	protected void insertTempNorm(Norm norm) { restrictTempNorms.put(norm.getName(), norm); }
-	protected void deleteTempNorm() { restrictTempNorms.clear(); }
-	protected Hashtable<String, Norm> getAllTempNorms() { return restrictTempNorms; }
+	// Temporary Plan Norms
+	protected void insertPlanTempNorm(Norm norm) { restrictPlanTempNorms.put(norm.getName(), norm); }
+	protected void deletePlanTempNorm() { restrictPlanTempNorms.clear(); }
+	protected Hashtable<String, Norm> getAllPlanTempNorms() { return restrictPlanTempNorms; }
+	
+	// Temporary Belief Norms
+	protected void insertBeliefTempNorm(Norm norm) { restrictBeliefTempNorms.put(norm.getName(), norm); }
+	protected void deleteBeliefTempNorm() { restrictBeliefTempNorms.clear(); }
+	protected Hashtable<String, Norm> getAllBeliefTempNorms() { return restrictBeliefTempNorms; }
+	
+	//Temporary Goal Norms
+	protected void insertGoalTempNorm(Norm norm) { restrictGoalTempNorms.put(norm.getName(), norm); }
+	protected void deleteGoalTempNorm() { restrictGoalTempNorms.clear(); }
+	protected Hashtable<String, Norm> getAllGoalTempNorms() { return restrictGoalTempNorms; }
 	
 	/********************************************************************************************************************/
 	
@@ -102,7 +114,7 @@ public abstract class GoalAgent extends GenericAgent
 	}
 	
 	protected Norm containsNormPlan(Plan pl, NormType nt) {
-		for ( Norm norm: restrictTempNorms.values() ) {
+		for ( Norm norm: restrictPlanTempNorms.values() ) {
 			Plan p = norm.getNormResource().getPlan();
 			if ( p!=null && p.isEqual(pl) && norm.getNormType() == nt && norm.isActive() ) {
 				return norm;
@@ -113,7 +125,7 @@ public abstract class GoalAgent extends GenericAgent
 	}
 	
 	protected Norm containsNormPlanDiferent(Plan pl, NormType nt) {
-		for ( Norm norm: restrictTempNorms.values() ) {
+		for ( Norm norm: restrictPlanTempNorms.values() ) {
 			Plan p = norm.getNormResource().getPlan();
 			if ( p!=null && !p.isEqual(pl) && norm.getNormType() == nt && norm.isActive() ) {
 				return norm;
@@ -170,21 +182,21 @@ public abstract class GoalAgent extends GenericAgent
 	/********************************************************************************************************************/
 	
 	public void normProcessBelief(Belief belief) {
-		deleteTempNorm();
-		removeAllPlans();
+		//deleteBeliefTempNorm();
+		//removeAllPlans();
 		
 		if( containBelief( belief.getName() ) ) {
 			List<Plan> plans = successorFunction( belief );
 			if(plans != null) {
 				Norm norm = containsNormBelief(belief, NormType.OBLIGATION);
-				if( norm != null ) {	
+				if( norm != null ) {
 					int count = 0;
 					for(Plan plan : plans) {
 						count++;
 						addPlan("CurrentBeliefPlan" + count, plan);
 						NormResource resource = new NormResource(plan);
 						Norm normTemp = new Norm( norm.getName() + "TEMP" + count, NormType.OBLIGATION, resource, norm.getNormConstraint() );
-						insertTempNorm(normTemp);
+						insertBeliefTempNorm(normTemp);
 					}
 				}
 					
@@ -196,7 +208,7 @@ public abstract class GoalAgent extends GenericAgent
 						addPlan("CurrentBeliefPlan" + count, plan);
 						NormResource resource = new NormResource(plan);
 						Norm normTemp = new Norm( norm.getName() + "TEMP" + count, NormType.PROHIBITION, resource, norm.getNormConstraint() );
-						insertTempNorm(normTemp);
+						insertBeliefTempNorm(normTemp);
 					}
 				}
 			}
@@ -254,8 +266,7 @@ public abstract class GoalAgent extends GenericAgent
 	
 	/********************************************************************************************************************/
 	
-	private NormType getNormTypeActionList(List<Action> actions)
-	{
+	private NormType getNormTypeActionList(List<Action> actions) {
 		NormType actionsNormType = NormType.PERMISSION;
 		
 		if( actions != null && !actions.isEmpty() ) {

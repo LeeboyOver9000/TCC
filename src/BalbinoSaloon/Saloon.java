@@ -13,8 +13,7 @@ public class Saloon extends Environment
 	private List<Beer> beers = new ArrayList<Beer>();
 	private List<Table> tables = new ArrayList<Table>();
 	
-	public Saloon(String name, String host, String port)
-	{
+	public Saloon(String name, String host, String port) {
 		super(name, host, port);
 		
 		refrigerator = new Refrigerator("Refrigerator", 8);

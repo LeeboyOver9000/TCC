@@ -17,6 +17,10 @@ public class SellBeer extends Action
 	private Brand brand;
 	private ACLMessage message;
 	
+	public SellBeer() {
+		this(null);
+	}
+	
 	public SellBeer(Waiter agent)
 	{
 		super("SellBeer");

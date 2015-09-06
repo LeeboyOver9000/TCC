@@ -43,7 +43,14 @@ public class Plan extends SequentialBehaviour {
 	public void removeAction(Action action) { actions.remove(action); }
 	public void removeAllActions() { actions.clear(); }
 	public void addAction(Action action) { actions.add(action); }
-	public boolean containAction(Action action) { return actions.contains(action); }
+	public boolean containAction(Action action) {
+		for( Action a: actions ) {
+			if ( a.getName().equalsIgnoreCase( action.getName() ) ) {
+				return true;
+			}
+		}
+		return false; 
+	}
 	
 	public boolean isEqual(Plan plan) {
 		List<Action> actionList = plan.getActionList();

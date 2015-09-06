@@ -56,6 +56,7 @@ public class Table extends Belief {
 	public void leave(Client client) {
 		for(Client c : clients) {
 			if( c.getLocalName().equalsIgnoreCase( client.getLocalName() ) ) {
+				stateOfEachClient.remove( client.getName() );
 				client.setTable(null);
 				clients.remove(client);
 				break;

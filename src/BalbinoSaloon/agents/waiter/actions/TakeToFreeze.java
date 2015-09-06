@@ -11,6 +11,10 @@ public class TakeToFreeze extends Action
 	private Beer beer;
 	private Waiter agent;
 	
+	public TakeToFreeze() {
+		this(null);
+	}
+	
 	public TakeToFreeze(Waiter agent)
 	{
 		super("TakeToFreeze");

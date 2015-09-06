@@ -9,6 +9,10 @@ public class KickOutClient extends Action
 	private Waiter agent;
 	private ACLMessage message;
 	
+	public KickOutClient() {
+		this(null);
+	}
+	
 	public KickOutClient(Waiter agent) {
 		super("KickOutClient");
 		this.agent = agent;
