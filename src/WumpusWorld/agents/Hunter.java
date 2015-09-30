@@ -16,10 +16,8 @@ import WumpusWorld.actions.TurnRight;
 import WumpusWorld.goals.GetTheGold;
 import WumpusWorld.goals.KillTheWumpus;
 import WumpusWorld.goals.LeaveTheCave;
-import WumpusWorld.goals.MakeTheTour;
 import WumpusWorld.util.Direction;
 import WumpusWorld.util.KnowledgeBase;
-import WumpusWorld.util.Path;
 import jamder.agents.GoalAgent;
 import jamder.behavioural.Plan;
 import jamder.behavioural.Sensor;
@@ -27,8 +25,7 @@ import jamder.roles.AgentRole;
 import jamder.structural.Belief;
 import jamder.structural.Goal;
 
-public class Hunter extends GoalAgent
-{	
+public class Hunter extends GoalAgent {	
 	private int gold = 0;
 	private int arrow = 0;
 	private int killedWumpus = 0;
@@ -65,9 +62,9 @@ public class Hunter extends GoalAgent
 		KB = new KnowledgeBase(this, initialRoom, maze.getMazeSize(), random );
 		
 		// Goals	
-		leaveCave = new LeaveTheCave(this, random);
+		getGold = new GetTheGold(this);
+		leaveCave = new LeaveTheCave(this);
 		killWumpus = new KillTheWumpus(this);
-		getGold = new GetTheGold(this, random);
 		
 		addGoal(leaveCave.getName(), leaveCave);
 		addGoal(killWumpus.getName(), killWumpus);
@@ -124,25 +121,18 @@ public class Hunter extends GoalAgent
 	protected Goal formulateGoalFunction(Belief belief) {
 		Room room = (Room) belief;
 		
-		/*
 		if( room.isStench() && arrow > 0 && !room.isGlitter() ) {
 			return killWumpus;
-		}
-		*/
-				
-		if( gold < 1 || room.isGlitter() ) {
-			return getGold;
 		}
 		
 		if( gold >= 1 )
 			return leaveCave;
 		
-		return null;
+		return getGold;
 	}
 	
 	@Override
-	protected Plan planning(Goal goal) 
-	{	
+	protected Plan planning(Goal goal)  {	
 		if( goal.getName().equals("GetTheGold") ) {	
 			return ((GetTheGold) goal).toDo(); 
 		}
@@ -178,7 +168,7 @@ public class Hunter extends GoalAgent
 	protected List<Plan> successorFunction(Belief belief) {
 		List<Plan> plans = new ArrayList<Plan>();
 		
-		Room room = (Room) belief;
+		/*Room room = (Room) belief;
 		Plan plan = new Plan(this);
 		
 		int x = room.getCoordinate().getX();
@@ -188,7 +178,8 @@ public class Hunter extends GoalAgent
 			Path.moveTo(this, Direction.EAST, plan);
 		}
 		
-		plans.add(plan);
+		plans.add(plan);*/
+		
 		return plans;
 	}
 	

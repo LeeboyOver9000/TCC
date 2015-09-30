@@ -1,11 +1,10 @@
 package WumpusWorld.actions;
 
+import jamder.behavioural.Action;
 import WumpusWorld.Maze;
-import WumpusWorld.Room;
 import WumpusWorld.agents.Hunter;
 import WumpusWorld.util.Direction;
 import WumpusWorld.util.Path;
-import jamder.behavioural.Action;
 
 public class Forward extends Action 
 {
@@ -66,14 +65,14 @@ public class Forward extends Action
 	@Override
 	public boolean preConditionIsTrue() 
 	{	
-		if( (agent.getDirection() == Direction.NORTH &&  y != 0 ) ||
+		/*if( (agent.getDirection() == Direction.NORTH &&  y != 0 ) ||
 			(agent.getDirection() == Direction.SOUTH && y != size-1 ) ||
 			(agent.getDirection() == Direction.EAST && x != size-1 ) || 
 			(agent.getDirection() == Direction.WEST && x != 0) ) {
 			return true;
-		}
+		}*/
 			
-		return false;
+		return true;
 	}
 
 }

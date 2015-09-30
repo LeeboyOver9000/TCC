@@ -12,7 +12,6 @@ public class KnowledgeBase
 {
 	private Room initialRoom;
 	private Room currentRoom;
-	private Room previousRoom;
 	
 	private int maze_size;
 	private Random random;
@@ -40,7 +39,7 @@ public class KnowledgeBase
 		wumpus = new boolean[maze_size][maze_size];
 		pits = new boolean[maze_size][maze_size];
 		
-		initialRoom = previousRoom = currentRoom = room;
+		initialRoom = currentRoom = room;
 		
 		for(int i = 0 ; i < maze_size ; i++)
 		{
@@ -65,23 +64,83 @@ public class KnowledgeBase
 	public Room getInitialRoom() { return initialRoom; }
 	public Room getCurrentRoom() { return currentRoom; }
 	public void setCurrentRoom(Room currentRoom) { this.currentRoom = currentRoom; }
-	public Room getPreviousRoom() { return previousRoom; }
-	public void setPreviousRoom(Room previousRoom) { this.previousRoom = previousRoom; }
 	
-	public boolean isVisited(int x, int y) { return visited[x][y]; }	
-	public void setVisited(boolean value, int x, int y)	{ visited[x][y] = value; }
-	public boolean isSafe(int x, int y) { return safe[x][y]; }
-	public void setSafe(boolean value, int x, int y) { safe[x][y] = value; }
-	public boolean isWumpus(int x, int y) { return wumpus[x][y]; }
-	public void setWumpu(boolean value, int x, int y) { wumpus[x][y] = value; }
-	public boolean isPit(int x, int y) { return pits[x][y]; }
-	public void setPits(boolean value, int x, int y) { pits[x][y] = value; }
-	public boolean isStench(int x, int y) { return smell[x][y]; }
-	public void setStench(boolean value, int x, int y) { smell[x][y] = value; }
-	public boolean isBreeze(int x, int y) { return breeze[x][y]; }
-	public void setBreezee(boolean value, int x, int y) { breeze[x][y] = value; }
-	public boolean isGlitter(int x, int y) { return glitter[x][y]; }
-	public void setGlitter(boolean value, int x, int y) { glitter[x][y] = value; }
+	public boolean isVisited(int x, int y) {
+		if(x >= 0 && x < maze_size && y >= 0 && y < maze_size)
+			return visited[x][y];
+		return false;
+	}
+	
+	public void setVisited(boolean value, int x, int y)	{
+		if(x >= 0 && x < maze_size && y >= 0 && y < maze_size)
+			visited[x][y] = value; 
+	}
+	
+	public boolean isSafe(int x, int y) {
+		if(x >= 0 && x < maze_size && y >= 0 && y < maze_size)
+			return safe[x][y];
+		return false;
+	}
+	
+	public void setSafe(boolean value, int x, int y) {
+		if(x >= 0 && x < maze_size && y >= 0 && y < maze_size)
+			safe[x][y] = value; 
+	}
+	
+	public boolean isWumpus(int x, int y) {
+		if(x >= 0 && x < maze_size && y >= 0 && y < maze_size)
+			return wumpus[x][y];
+		return false;
+	}
+	
+	public void setWumpu(boolean value, int x, int y) {
+		if(x >= 0 && x < maze_size && y >= 0 && y < maze_size)
+			wumpus[x][y] = value; 
+	}
+	
+	public boolean isPit(int x, int y) {
+		if(x >= 0 && x < maze_size && y >= 0 && y < maze_size)
+			return pits[x][y];
+		return false;
+	}
+	
+	public void setPits(boolean value, int x, int y) {
+		if(x >= 0 && x < maze_size && y >= 0 && y < maze_size)
+			pits[x][y] = value; 
+	}
+	
+	public boolean isStench(int x, int y) {
+		if(x >= 0 && x < maze_size && y >= 0 && y < maze_size)
+			return smell[x][y];
+		return false;
+	}
+	
+	public void setStench(boolean value, int x, int y) {
+		if(x >= 0 && x < maze_size && y >= 0 && y < maze_size)
+			smell[x][y] = value; 
+	}
+	
+	public boolean isBreeze(int x, int y) {
+		if(x >= 0 && x < maze_size && y >= 0 && y < maze_size)
+			return breeze[x][y];
+		return false;
+	}
+	
+	public void setBreezee(boolean value, int x, int y) {
+		if(x >= 0 && x < maze_size && y >= 0 && y < maze_size)
+			breeze[x][y] = value; 
+	}
+	
+	public boolean isGlitter(int x, int y) {
+		if(x >= 0 && x < maze_size && y >= 0 && y < maze_size)
+			return glitter[x][y];
+		return false;
+	}
+	
+	public void setGlitter(boolean value, int x, int y) {
+		if(x >= 0 && x < maze_size && y >= 0 && y < maze_size)
+			glitter[x][y] = value;
+	}
 	
 	public void updateKnowledgeBase(Room room) {
 		int x = room.getCoordinate().getX();
@@ -169,7 +228,31 @@ public class KnowledgeBase
 			if( room.isBreeze() ) {
 				breeze[x][y] = true;
 				
-				if( x == 0 ) {
+				if( !isVisited(x-1, y) ) {
+					if( inferencePIT(x-1, y) ) {
+						pits[x-1][y] = true;
+					}
+				}
+				
+				if( !isVisited(x+1, y) ) {
+					if( inferencePIT(x+1, y) ) {
+						pits[x+1][y] = true;
+					}
+				}
+				
+				if( !isVisited(x, y-1) ) {
+					if( inferencePIT(x, y-1) ) {
+						pits[x][y-1] = true;
+					}
+				}
+				
+				if( !isVisited(x, y+1) ) {
+					if( inferencePIT(x, y+1) ) {
+						pits[x][y+1] = true;
+					}
+				}
+				
+				/*if( x == 0 ) {
 					pits[x+1][y] = true;
 					safe[x][y-1] = true;
 					safe[x][y+1] = true;
@@ -197,54 +280,37 @@ public class KnowledgeBase
 					
 					Path.addNextNode(currentRoom, agent.getMaze().getRoom(x-1, y), Direction.WEST);
 					Path.addNextNode(currentRoom, agent.getMaze().getRoom(x+1, y), Direction.EAST);
-				} else {
-					if( !isVisited(x-1, y) ) {
-						if( inferencePIT(x-1, y) ) {
-							pits[x-1][y] = true;
-						}
-					}
-					
-					if( !isVisited(x+1, y) ) {	
-						if( inferencePIT(x+1, y) ) {
-							pits[x+1][y] = true;
-						}
-					}
-					
-					if( !isVisited(x, y-1) ) {
-						if( inferencePIT(x, y-1) ) {
-							pits[x][y-1] = true;
-						}
-					}
-					
-					if( !isVisited(x, y+1) ) {
-						if( inferencePIT(x, y+1) ) {
-							pits[x][y+1] = true;
-						}
-					}
-					
-					if( !isVisited(x-1, y) && inferenceSAFE(x-1, y) ) {
-						safe[x-1][y] = true;
-						Path.addNextNode(currentRoom, agent.getMaze().getRoom(x-1, y), Direction.WEST);
-					}
-					if( !isVisited(x+1, y) && inferenceSAFE(x+1, y) ) {
-						safe[x+1][y] = true;
-						Path.addNextNode(currentRoom, agent.getMaze().getRoom(x+1, y), Direction.EAST);
-					}
-					if( !isVisited(x, y-1) && inferenceSAFE(x, y-1) ) {
-						safe[x][y-1] = true;
-						Path.addNextNode(currentRoom, agent.getMaze().getRoom(x, y-1), Direction.NORTH);
-					}
-					if( !isVisited(x, y+1) && inferenceSAFE(x, y+1) ) {
-						safe[x][y+1] = true;
-						Path.addNextNode(currentRoom, agent.getMaze().getRoom(x, y+1), Direction.SOUTH);
-					}
-				}
+				}*/
 			}
 			
 			if( room.isStench() ) {
 				smell[x][y] = true;
 				
-				if( x == 0 ) {
+				if( !isVisited(x-1, y) ) {
+					if( inferenceWUMPUS(x-1, y) ) {
+						wumpus[x-1][y] = true;
+					}
+				}
+				
+				if( !isVisited(x+1, y) ) {	
+					if( inferenceWUMPUS(x+1, y) ) {
+						wumpus[x+1][y] = true;
+					}
+				}
+				
+				if( !isVisited(x, y-1) ) {
+					if( inferenceWUMPUS(x, y-1) ) {
+						wumpus[x][y-1] = true;
+					}
+				}
+				
+				if( !isVisited(x, y+1) ) {
+					if( inferenceWUMPUS(x, y+1) ) {
+						wumpus[x][y+1] = true;
+					}
+				}
+				
+				/*if( x == 0 ) {
 					wumpus[x+1][y] = true;
 					safe[x][y-1] = true;
 					safe[x][y+1] = true;
@@ -269,54 +335,33 @@ public class KnowledgeBase
 					
 					Path.addNextNode(currentRoom, agent.getMaze().getRoom(x-1, y), Direction.WEST);
 					Path.addNextNode(currentRoom, agent.getMaze().getRoom(x+1, y), Direction.EAST);
-				} else {
-					if( !isVisited(x-1, y) ) {
-						if( inferenceWUMPUS(x-1, y) ) {
-							wumpus[x-1][y] = true;
-						}
-					}
-					
-					if( !isVisited(x+1, y) ) {	
-						if( inferenceWUMPUS(x+1, y) ) {
-							wumpus[x+1][y] = true;
-						}
-					}
-					
-					if( !isVisited(x, y-1) ) {
-						if( inferenceWUMPUS(x, y-1) ) {
-							wumpus[x][y-1] = true;
-						}
-					}
-					
-					if( !isVisited(x, y+1) ) {
-						if( inferenceWUMPUS(x, y+1) ) {
-							wumpus[x][y+1] = true;
-						}
-					}
-					
-					if( !isVisited(x-1, y) && inferenceSAFE(x-1, y) ) {
-						Path.addNextNode(currentRoom, agent.getMaze().getRoom(x-1, y), Direction.WEST);
-						safe[x-1][y] = true;
-					}
-					if( !isVisited(x+1, y) && inferenceSAFE(x+1, y) ) {
-						Path.addNextNode(currentRoom, agent.getMaze().getRoom(x+1, y), Direction.EAST);
-						safe[x+1][y] = true;
-					}
-					if( !isVisited(x, y-1) && inferenceSAFE(x, y-1) ) {
-						Path.addNextNode(currentRoom, agent.getMaze().getRoom(x, y-1), Direction.NORTH);
-						safe[x][y-1] = true;
-					}
-					if( !isVisited(x, y+1) && inferenceSAFE(x, y+1) ) {
-						Path.addNextNode(currentRoom, agent.getMaze().getRoom(x, y+1), Direction.SOUTH);
-						safe[x][y+1] = true;
-					}
-				}
+				}*/
+			}
+			
+			if( !isVisited(x-1, y) && inferenceSAFE(x-1, y) ) {
+				safe[x-1][y] = true;
+				Path.addNextNode(currentRoom, agent.getMaze().getRoom(x-1, y), Direction.WEST);
+			}
+			
+			if( !isVisited(x+1, y) && inferenceSAFE(x+1, y) ) {
+				safe[x+1][y] = true;
+				Path.addNextNode(currentRoom, agent.getMaze().getRoom(x+1, y), Direction.EAST);
+			}
+			
+			if( !isVisited(x, y-1) && inferenceSAFE(x, y-1) ) {
+				safe[x][y-1] = true;
+				Path.addNextNode(currentRoom, agent.getMaze().getRoom(x, y-1), Direction.NORTH);
+			}
+			
+			if( !isVisited(x, y+1) && inferenceSAFE(x, y+1) ) {
+				safe[x][y+1] = true;
+				Path.addNextNode(currentRoom, agent.getMaze().getRoom(x, y+1), Direction.SOUTH);
 			}
 		}
 	}
 
 	private boolean inferencePIT(int x, int y){	
-		if( x != 0 && y != 0 && x != getMazeSize()-1 && y != getMazeSize()-1 ) {
+		if(x >= 0 && x < maze_size && y >= 0 && y < maze_size) {
 			if( isVisited(x-1, y) && isBreeze(x-1, y) && 
 				isVisited(x+1, y) && isBreeze(x+1, y) &&
 				isVisited(x, y-1) && isBreeze(x, y-1) && 
@@ -329,20 +374,44 @@ public class KnowledgeBase
 	}
 	
 	private boolean inferenceWUMPUS(int x, int y) {
-		if( x != 0 && y != 0 && x != getMazeSize()-1 && y != getMazeSize()-1 ) {
+		if(x >= 0 && x < maze_size && y >= 0 && y < maze_size) {
 			if( isVisited(x-1, y) && isStench(x-1, y) && 
+				isVisited(x+1, y) && isStench(x+1, y) ) {
+				return true;
+			}
+			if( isVisited(x-1, y) && isStench(x-1, y) &&
+				isVisited(x, y-1) && isStench(x, y-1) ) {
+				return true;
+			}
+			if( isVisited(x-1, y) && isStench(x-1, y) && 
+				isVisited(x, y+1) && isStench(x, y+1) ) {
+				return true;
+			}
+			if( isVisited(x+1, y) && isStench(x+1, y) &&
+				isVisited(x, y-1) && isStench(x, y-1) ) {
+				return true;
+			}
+			if( isVisited(x+1, y) && isStench(x+1, y) && 
+				isVisited(x, y+1) && isStench(x, y+1) ) {
+				return true;
+			}
+			if( isVisited(x, y-1) && isStench(x, y-1) && 
+				isVisited(x, y+1) && isStench(x, y+1) ) {
+				return true;
+			}
+			/*if( isVisited(x-1, y) && isStench(x-1, y) && 
 				isVisited(x+1, y) && isStench(x+1, y) &&
 				isVisited(x, y-1) && isStench(x, y-1) && 
 				isVisited(x, y+1) && isStench(x, y+1) ) {
 				return true;
-			}
+			}*/
 		}
 		
 		return false;
 	}
 	
 	private boolean inferenceSAFE(int x, int y) {	
-		if( x > 0 && x < getMazeSize()-1 && y > 0 && y < getMazeSize()-1 ) {
+		if(x >= 0 && x < maze_size && y >= 0 && y < maze_size) {
 			boolean freePit = false;
 			boolean freeWumpus = false;
 			
@@ -363,11 +432,9 @@ public class KnowledgeBase
 			if( freePit && freeWumpus ) {
 				return true;
 			}
-			
-			return false;
 		}
 		
-		return true;
+		return false;
 	}
 
 	public Coordinate getCoordinateDirection(Direction direction, Room room) {
@@ -377,10 +444,10 @@ public class KnowledgeBase
 		if( direction == Direction.NORTH && y != 0 )
 			return new Coordinate(x, y-1);
 			
-		if( direction == Direction.SOUTH && y != getMazeSize()-1 )
+		if( direction == Direction.SOUTH && y != maze_size-1 )
 			return new Coordinate(x, y+1);
 		
-		if( direction == Direction.EAST && x != getMazeSize()-1 )
+		if( direction == Direction.EAST && x != maze_size-1 )
 			return new Coordinate(x+1, y);
 			
 		if( direction == Direction.WEST && x != 0 )
@@ -390,23 +457,22 @@ public class KnowledgeBase
 	}
 	
 	public boolean isSafeMove(Room room, Direction direction) {
-		int size = getMazeSize();
 		int x = room.getCoordinate().getX();
 		int y = room.getCoordinate().getY();
 		
-		if( direction == Direction.NORTH && y > 0 && isSafe(x, y-1) ) {
+		if( direction == Direction.NORTH && y != 0 && isSafe(x, y-1) ) {
 			return true;
 		}
 		
-		if( direction == Direction.EAST && x < size-1 && isSafe(x+1, y) ) {
+		if( direction == Direction.EAST && x != maze_size-1 && isSafe(x+1, y) ) {
 			return true;
 		}
 		
-		if( direction == Direction.WEST && x > 0 && isSafe(x-1, y) ) {
+		if( direction == Direction.WEST && x != 0 && isSafe(x-1, y) ) {
 			return true;
 		}
 		
-		if( direction == Direction.SOUTH && y < size-1 && isSafe(x, y+1) ) {
+		if( direction == Direction.SOUTH && y != maze_size-1 && isSafe(x, y+1) ) {
 			return true;
 		}
 		
@@ -419,24 +485,22 @@ public class KnowledgeBase
 		
 		List<Coordinate> coordinates = new ArrayList<Coordinate>();
 	
-		if( x > 0 && isSafeMove(room, Direction.WEST) )
+		if( x != 0 && isSafeMove(room, Direction.WEST) )
 			coordinates.add(new Coordinate(x-1, y));
 		
-		if( y > 0 && isSafeMove(room, Direction.NORTH) )
+		if( y != 0 && isSafeMove(room, Direction.NORTH) )
 			coordinates.add(new Coordinate(x, y-1));
 		
-		if( y < getMazeSize()-1 && isSafeMove(room, Direction.SOUTH) )
+		if( y != maze_size-1 && isSafeMove(room, Direction.SOUTH) )
 			coordinates.add(new Coordinate(x, y+1));
 		
-		if( x < getMazeSize()-1 && isSafeMove(room, Direction.EAST ) )
+		if( x != maze_size-1 && isSafeMove(room, Direction.EAST ) )
 			coordinates.add(new Coordinate(x+1, y));
 		
 		return coordinates;
 	}
 	
 	public Direction getRandomNextDirection(Room room) {
-		int size = getMazeSize();
-		
 		int x = room.getCoordinate().getX();
 		int y = room.getCoordinate().getY();
 		
@@ -445,12 +509,12 @@ public class KnowledgeBase
 		int direction = random.nextInt(4);
 		
 		if( x == 0 ) {
-			if( y == 0 ) {		
+			if( y == 0 ) {
 				while( direction == 0 || direction == 3)
 					direction = random.nextInt(4);
 				
 				return dice[direction];
-			} else if( y == size -1 ) {	
+			} else if( y == maze_size-1 ) {	
 				while( direction == 1 || direction == 3)
 					direction = random.nextInt(4);
 				
@@ -463,13 +527,13 @@ public class KnowledgeBase
 			}
 		}
 		
-		if( x == size-1 ) {
+		if( x == maze_size-1 ) {
 			if( y == 0 ) {
 				while( direction == 0 || direction == 2 )
 					direction = random.nextInt(4);
 				
 				return dice[direction];
-			} else if( y == size-1 ) {
+			} else if( y == maze_size-1 ) {
 				while( direction == 1 || direction == 2)
 					direction = random.nextInt(4);
 				
@@ -489,7 +553,7 @@ public class KnowledgeBase
 			return dice[direction];
 		}
 		
-		if( y == size-1 ) {
+		if( y == maze_size-1 ) {
 			while( direction == 1 )
 				direction = random.nextInt(4);
 			

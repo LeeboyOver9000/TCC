@@ -1,15 +1,8 @@
 package WumpusWorld;
 
-import WumpusWorld.gui.MainWindow;
-
 import javax.swing.SwingUtilities;
 
-import jade.core.Profile;
-import jade.core.ProfileImpl;
-import jade.core.Runtime;
-import jade.wrapper.AgentContainer;
-import jade.wrapper.AgentController;
-import jade.wrapper.ControllerException;
+import WumpusWorld.gui.MainWindow;
 
 public class Main {
 	public static void main(String[] args) {

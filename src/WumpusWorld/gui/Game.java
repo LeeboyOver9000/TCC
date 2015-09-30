@@ -105,8 +105,7 @@ public class Game extends JPanel implements Runnable
 		g.drawString(text, x0 + 20, y0 + offsetY);	
 	}
 	
-	private void drawGold(Graphics g) 
-	{
+	private void drawGold(Graphics g) {
 		Maze maze = environment.getMaze();
 		
 		for( int i = 0 ; i < maze.getMazeSize() ; i++ )

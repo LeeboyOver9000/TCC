@@ -15,14 +15,14 @@ public class Climb extends Action
 	@Override
 	public void execute() 
 	{
-		System.out.println("The hunter " + agent.getLocalName() + " is leaving the cave now.");
+		System.out.println("The agent " + agent.getLocalName() + " got away of the cave.");
 		agent.getEnvironment().removeAgent( agent.getLocalName() );
 	}
 
 	@Override
 	public boolean preConditionIsTrue() 
 	{
-		if( agent.getAmountGold() > 0 && agent.isInitialRoom() )
+		if( agent.isInitialRoom() )
 			return true;
 		
 		return false;

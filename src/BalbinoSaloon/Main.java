@@ -109,7 +109,7 @@ public class Main {
 		//waiterRole.addRestrictNorm("N10", n10);
 		//waiterRole.addRestrictNorm("N11", n11);
 		//waiterRole.addRestrictNorm("N12", n12);
-		waiterRole.addRestrictNorm("N13", n13);
+		//waiterRole.addRestrictNorm("N13", n13);
 		//waiterRole.addRestrictNorm("N14", n14);
 		
 		Waiter waiter = new Waiter("Waiter", balbinoBar, waiterRole, balbinoBar.getRefrigerator(), balbinoBar.getBeers(), balbinoBar.getTables());
