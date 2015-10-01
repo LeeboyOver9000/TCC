@@ -1,53 +1,50 @@
 package WumpusWorld.actions;
 
+import jamder.behavioural.Action;
 import WumpusWorld.Maze;
-import WumpusWorld.Room;
 import WumpusWorld.agents.Hunter;
 import WumpusWorld.util.Direction;
-import jamder.behavioural.Action;
 
-public class Shoot extends Action 
-{
+public class Shoot extends Action {
 	private Hunter agent;
 	
-	public Shoot(Hunter agent)
-	{
+	public Shoot(Hunter agent) {
 		super("Shoot");
 		this.agent = agent;
 	}
 	
 	@Override
-	public void execute() 
-	{
+	public void execute() {
 		Maze maze = agent.getMaze();
 		int number = agent.getKilledWumpus();
 		
 		int x = agent.getKnowledgeBase().getCurrentRoom().getCoordinate().getX();
 		int y = agent.getKnowledgeBase().getCurrentRoom().getCoordinate().getY();
 		
-		if(agent.getDirection() == Direction.NORTH)
-		{
+		if(agent.getDirection() == Direction.NORTH) {
 			if( y > 0 && maze.getRoom(x, y-1).isWumpus() ) {
 				System.out.println("Wumpus Scream");
 				agent.setKilledWumpus(++number);
 				maze.getRoom(x, y-1).setWumpus(false);
+				removeStenchAround(maze, x, y-1);
 			}
 		}
 		
 		if(agent.getDirection() == Direction.SOUTH) {
-			if( y < agent.getKnowledgeBase().getMazeSize()-1 && maze.getRoom(x, y+1).isWumpus() )
-			{
+			if( y < maze.getMazeSize()-1 && maze.getRoom(x, y+1).isWumpus() ) {
 				System.out.println("Wumpus Scream");
 				agent.setKilledWumpus(++number);
 				maze.getRoom(x, y+1).setWumpus(false);
+				removeStenchAround(maze, x, y+1);
 			}
 		}
 		
 		if(agent.getDirection() == Direction.EAST) {
-			if( x < agent.getKnowledgeBase().getMazeSize()-1 && maze.getRoom(x+1, y).isWumpus() ) {
+			if( x < maze.getMazeSize()-1 && maze.getRoom(x+1, y).isWumpus() ) {
 				System.out.println("Wumpus Scream");
 				agent.setKilledWumpus(++number);
 				maze.getRoom(x+1, y).setWumpus(false);
+				removeStenchAround(maze, x+1, y);
 			}
 		}
 		
@@ -56,6 +53,7 @@ public class Shoot extends Action
 				System.out.println("Wumpus Scream");
 				agent.setKilledWumpus(++number);
 				maze.getRoom(x-1, y).setWumpus(false);
+				removeStenchAround(maze, x-1, y);
 			}
 		}
 		
@@ -70,5 +68,11 @@ public class Shoot extends Action
 		
 		return false;
 	}
-
+	
+	private void removeStenchAround(Maze maze, int x, int y) {
+		maze.getRoom(x-1, y).setStench(false);
+		maze.getRoom(x+1, y).setStench(false);
+		maze.getRoom(x, y-1).setStench(false);
+		maze.getRoom(x, y+1).setStench(false);
+	}
 }

@@ -4,8 +4,7 @@ import WumpusWorld.agents.Hunter;
 import WumpusWorld.util.State;
 import jamder.behavioural.Action;
 
-public class Grab extends Action 
-{
+public class Grab extends Action {
 	private int y;
 	private int x;
 	private Hunter agent;
@@ -14,12 +13,10 @@ public class Grab extends Action
 		this(null);
 	}
 	
-	public Grab(Hunter agent)
-	{
+	public Grab(Hunter agent) {
 		super("Grab");
 		
-		if( agent != null)
-		{
+		if( agent != null) {
 			this.agent = agent;
 			
 			x = agent.getKnowledgeBase().getCurrentRoom().getCoordinate().getX();
@@ -28,8 +25,7 @@ public class Grab extends Action
 	}
 
 	@Override
-	public void execute() 
-	{
+	public void execute() {
 		int gold = agent.getAmountGold();
 		agent.setAmountGold(++gold);
 		System.out.println("The agent put the gold in his bag.");
@@ -38,8 +34,7 @@ public class Grab extends Action
 	}
 
 	@Override
-	public boolean preConditionIsTrue() 
-	{
+	public boolean preConditionIsTrue() {
 		if( agent.getKnowledgeBase().getCurrentRoom().isGlitter() )
 			return true;
 		

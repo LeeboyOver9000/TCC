@@ -58,12 +58,11 @@ public class Game extends JPanel implements Runnable
 		Maze maze = environment.getMaze();
 		Hunter agent = (Hunter) environment.getAgent("Hunter");
 		
-		if( agent != null )
-		{
+		if( agent != null ) {
 			for (int i = 0; i < maze.getMazeSize() ; i++)
 				for (int j = 0; j < maze.getMazeSize() ; j++)
 					if ( !agent.getKnowledgeBase().isVisited(i, j))
-						g.fillRect(i* wImage+3, j*hImage+3, wImage-6, hImage-6);					
+						g.fillRect(i*wImage+3, j*hImage+3, wImage-6, hImage-6);					
 		}		
 	}
 	
@@ -114,8 +113,7 @@ public class Game extends JPanel implements Runnable
 					drawImage(g, new File("res/gold.gif"), maze.getRoom(i, j).getCoordinate() );
 	}
 
-	private void drawAgent(Graphics g) 
-	{
+	private void drawAgent(Graphics g) {
 		Hunter agent = (Hunter) environment.getAgent("Hunter");
 		
 		if( agent != null) {	
@@ -123,8 +121,7 @@ public class Game extends JPanel implements Runnable
 		}
 	}
 	
-	private void drawWumpus(Graphics g) 
-	{
+	private void drawWumpus(Graphics g) {
 		Maze maze = environment.getMaze();
 		
 		for( int i = 0 ; i < maze.getMazeSize() ; i++ )
@@ -133,8 +130,7 @@ public class Game extends JPanel implements Runnable
 					drawImage(g, new File("res/wumpus.gif"), maze.getRoom(i, j).getCoordinate() );			
 	}
 	
-	private void drawPit(Graphics g) 
-	{
+	private void drawPit(Graphics g) {
 		Maze maze = environment.getMaze();
 		
 		for( int i = 0 ; i < maze.getMazeSize() ; i++ )
@@ -143,14 +139,11 @@ public class Game extends JPanel implements Runnable
 					drawImage(g, new File("res/pit.gif"), maze.getRoom(i, j).getCoordinate());
 	}
 	
-	private void drawStenchAndBreeze(Graphics g) 
-	{
+	private void drawStenchAndBreeze(Graphics g) {
 		Maze maze = environment.getMaze();
 		
-		for (int i = 0; i < y; i++) 
-		{
-			for (int j = 0; j < x; j++) 
-			{
+		for (int i = 0; i < y; i++) {
+			for (int j = 0; j < x; j++) {
 				if ( maze.getRoom(i, j).isStench() ) {
 					drawText(g, "Stench", i, j, 20);
 				}

@@ -18,6 +18,7 @@ import WumpusWorld.goals.KillTheWumpus;
 import WumpusWorld.goals.LeaveTheCave;
 import WumpusWorld.util.Direction;
 import WumpusWorld.util.KnowledgeBase;
+import WumpusWorld.util.Path;
 import jamder.agents.GoalAgent;
 import jamder.behavioural.Plan;
 import jamder.behavioural.Sensor;
@@ -27,7 +28,7 @@ import jamder.structural.Goal;
 
 public class Hunter extends GoalAgent {	
 	private int gold = 0;
-	private int arrow = 0;
+	private int arrow = 1;
 	private int killedWumpus = 0;
 	
 	// Knowledge of World
@@ -48,6 +49,11 @@ public class Hunter extends GoalAgent {
 	private Shoot shoot;
 	private Grab grab;
 	private Climb climb;
+	
+	private boolean hunterMode = false;
+	private boolean explorerMode = false;
+	private boolean escapeMode = false;
+	private boolean firstStep = false;
 	
 	private List<Room> roomToGo = new ArrayList<Room>();
 	private Random random = new Random( System.currentTimeMillis() );
@@ -102,6 +108,16 @@ public class Hunter extends GoalAgent {
 		return false;
 	}
 
+	
+	public boolean isHunterMode() { return hunterMode; }
+	public void setHunterMode(boolean hunterMode) { this.hunterMode = hunterMode; }
+
+	public boolean isExplorerMode() { return explorerMode; }
+	public void setExplorerMode(boolean explorerMode) { this.explorerMode = explorerMode; }
+
+	public boolean isEscapeMode() { return escapeMode; }
+	public void setEscapeMode(boolean escapeMode) { this.escapeMode = escapeMode; }
+
 	public Maze getMaze() { return maze; }
 	public void setMaze(Maze maze) { this.maze = maze; }
 	
@@ -117,13 +133,32 @@ public class Hunter extends GoalAgent {
 	public List<Room> getRoomToGo() { return roomToGo; }
 	public KnowledgeBase getKnowledgeBase() { return KB; }
 	
+	private void switchMode(String mode) {
+		if(mode.equalsIgnoreCase("GetTheGold")) {
+			setExplorerMode(true);
+			setHunterMode(false);
+			setEscapeMode(false);
+		}
+		
+		if(mode.equalsIgnoreCase("KillTheWumpus")) {
+			setExplorerMode(false);
+			setHunterMode(true);
+			setEscapeMode(false);
+		}
+		
+		if(mode.equalsIgnoreCase("LeaveTheCave")) {
+			setExplorerMode(false);
+			setHunterMode(false);
+			setEscapeMode(true);
+		}
+	}
+	
 	@Override
 	protected Goal formulateGoalFunction(Belief belief) {
 		Room room = (Room) belief;
 		
-		if( room.isStench() && arrow > 0 && !room.isGlitter() ) {
+		if( arrow > 0 && !room.isGlitter() && KB.hunterKnowWhereWumpusIs() )
 			return killWumpus;
-		}
 		
 		if( gold >= 1 )
 			return leaveCave;

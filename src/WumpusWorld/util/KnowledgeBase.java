@@ -251,36 +251,6 @@ public class KnowledgeBase
 						pits[x][y+1] = true;
 					}
 				}
-				
-				/*if( x == 0 ) {
-					pits[x+1][y] = true;
-					safe[x][y-1] = true;
-					safe[x][y+1] = true;
-					
-					Path.addNextNode(currentRoom, agent.getMaze().getRoom(x, y-1), Direction.NORTH);
-					Path.addNextNode(currentRoom, agent.getMaze().getRoom(x, y+1), Direction.SOUTH);
-				} else if( x == maze_size-1 ) {
-					pits[x-1][y] = true;
-					safe[x][y-1] = true;
-					safe[x][y+1] = true;
-					
-					Path.addNextNode(currentRoom, agent.getMaze().getRoom(x, y-1), Direction.NORTH);
-					Path.addNextNode(currentRoom, agent.getMaze().getRoom(x, y+1), Direction.SOUTH);
-				} else if( y == 0 ) {
-					safe[x-1][y] = true;
-					safe[x+1][y] = true;
-					pits[x][y+1] = true;
-					
-					Path.addNextNode(currentRoom, agent.getMaze().getRoom(x-1, y), Direction.WEST);
-					Path.addNextNode(currentRoom, agent.getMaze().getRoom(x+1, y), Direction.EAST);
-				} else if( y == maze_size-1 ) {
-					safe[x-1][y] = true;
-					safe[x+1][y] = true;
-					pits[x][y-1] = true;
-					
-					Path.addNextNode(currentRoom, agent.getMaze().getRoom(x-1, y), Direction.WEST);
-					Path.addNextNode(currentRoom, agent.getMaze().getRoom(x+1, y), Direction.EAST);
-				}*/
 			}
 			
 			if( room.isStench() ) {
@@ -309,33 +279,6 @@ public class KnowledgeBase
 						wumpus[x][y+1] = true;
 					}
 				}
-				
-				/*if( x == 0 ) {
-					wumpus[x+1][y] = true;
-					safe[x][y-1] = true;
-					safe[x][y+1] = true;
-					
-					Path.addNextNode(currentRoom, agent.getMaze().getRoom(x, y-1), Direction.NORTH);
-					Path.addNextNode(currentRoom, agent.getMaze().getRoom(x, y+1), Direction.SOUTH);
-				} else if( x == maze_size-1 ) {
-					wumpus[x-1][y] = true;
-					safe[x][y-1] = true;
-					safe[x][y+1] = true;
-					
-					Path.addNextNode(currentRoom, agent.getMaze().getRoom(x, y-1), Direction.NORTH);
-					Path.addNextNode(currentRoom, agent.getMaze().getRoom(x, y+1), Direction.SOUTH);
-				} else if( y == 0 ) {
-					safe[x-1][y] = true;
-					safe[x+1][y] = true;
-					wumpus[x][y+1] = true;
-				} else if( y == maze_size-1 ) {
-					safe[x-1][y] = true;
-					safe[x+1][y] = true;
-					wumpus[x][y-1] = true;
-					
-					Path.addNextNode(currentRoom, agent.getMaze().getRoom(x-1, y), Direction.WEST);
-					Path.addNextNode(currentRoom, agent.getMaze().getRoom(x+1, y), Direction.EAST);
-				}*/
 			}
 			
 			if( !isVisited(x-1, y) && inferenceSAFE(x-1, y) ) {
@@ -361,7 +304,7 @@ public class KnowledgeBase
 	}
 
 	private boolean inferencePIT(int x, int y){	
-		if(x >= 0 && x < maze_size && y >= 0 && y < maze_size) {
+		if(x > 0 && x < maze_size-1 && y > 0 && y < maze_size-1) {
 			if( isVisited(x-1, y) && isBreeze(x-1, y) && 
 				isVisited(x+1, y) && isBreeze(x+1, y) &&
 				isVisited(x, y-1) && isBreeze(x, y-1) && 
@@ -374,7 +317,8 @@ public class KnowledgeBase
 	}
 	
 	private boolean inferenceWUMPUS(int x, int y) {
-		if(x >= 0 && x < maze_size && y >= 0 && y < maze_size) {
+		if(x > 0 && x < maze_size-1 && y > 0 && y < maze_size-1) {
+			//Para este mapas com apenas 1 monstro Wumpus
 			if( isVisited(x-1, y) && isStench(x-1, y) && 
 				isVisited(x+1, y) && isStench(x+1, y) ) {
 				return true;
@@ -399,6 +343,8 @@ public class KnowledgeBase
 				isVisited(x, y+1) && isStench(x, y+1) ) {
 				return true;
 			}
+			
+			//Para mapas maiores e com mais de 1 monstro Wumpus
 			/*if( isVisited(x-1, y) && isStench(x-1, y) && 
 				isVisited(x+1, y) && isStench(x+1, y) &&
 				isVisited(x, y-1) && isStench(x, y-1) && 
@@ -411,7 +357,7 @@ public class KnowledgeBase
 	}
 	
 	private boolean inferenceSAFE(int x, int y) {	
-		if(x >= 0 && x < maze_size && y >= 0 && y < maze_size) {
+		if(x > 0 && x < maze_size-1 && y > 0 && y < maze_size-1) {
 			boolean freePit = false;
 			boolean freeWumpus = false;
 			
@@ -498,6 +444,15 @@ public class KnowledgeBase
 			coordinates.add(new Coordinate(x+1, y));
 		
 		return coordinates;
+	}
+	
+	public boolean hunterKnowWhereWumpusIs() {
+		for(int i = 0 ; i < maze_size ; i++)
+			for(int j = 0 ; j < maze_size ; j++)
+				if( isWumpus(i, j) )
+					return true;
+		
+		return false;
 	}
 	
 	public Direction getRandomNextDirection(Room room) {

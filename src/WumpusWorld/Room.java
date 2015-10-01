@@ -79,6 +79,7 @@ public class Room extends Belief implements Comparable<Room>
 		return false;
 	}
 	
+	@Override
 	public String toString() {
 		return getName();
 	}

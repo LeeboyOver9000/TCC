@@ -10,7 +10,6 @@ public class Forward extends Action
 {
 	private int x;
 	private int y;
-	private int size;
 	private Hunter agent;
 	
 	public Forward(Hunter agent) {
@@ -20,7 +19,6 @@ public class Forward extends Action
 			
 			x = agent.getKnowledgeBase().getCurrentRoom().getCoordinate().getX();
 			y = agent.getKnowledgeBase().getCurrentRoom().getCoordinate().getY();
-			size = agent.getMaze().getMazeSize();
 		}
 	}
 	

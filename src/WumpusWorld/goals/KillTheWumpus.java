@@ -91,19 +91,27 @@ public class KillTheWumpus extends Goal {
 	
 	public Plan toDo() {
 		Plan plan = new Plan(agent);
-		
 		Direction wumpusDirection = getWumpusDirection();
+		Room currentRoom = agent.getKnowledgeBase().getCurrentRoom();
+		
 		if( wumpusDirection != null ) {
 			if( agent.getDirection() != wumpusDirection ) {
 				aimToWumpus(plan);
 			}
-		
 			plan.addAction( agent.getAction("Shoot") );
-		}
-		else {
-			Room target = Path.getTargetRoom(agent);
-			Path.pathfinder(agent, target, path);
-			path.pop();
+		} else if ( path.isEmpty() ) {
+			if( Path.thereIsUnvisitedSafePlaceToGo(agent) ) {
+				Room target = Path.getTargetRoom(agent);
+				Path.pathfinder(agent, target, path);
+				path.pop();
+			} else {
+				System.out.println("Sorry, but there is no safe place to go!");
+				Direction direction = agent.getKnowledgeBase().getRandomNextDirection( currentRoom );
+				Path.moveTo( agent, direction, plan );
+			}
+		} else {
+			Room room = path.pop();
+			Path.moveToNextRoom(agent, room, plan);
 		}
 		
 		return plan;
