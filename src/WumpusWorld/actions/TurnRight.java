@@ -17,6 +17,8 @@ public class TurnRight extends Action
 	@Override
 	public void execute() 
 	{
+		int score = agent.getScore();
+		
 		if( agent.getDirection() == Direction.NORTH )
 		{
 			System.out.print(agent.getDirection() + " -> ");
@@ -44,6 +46,8 @@ public class TurnRight extends Action
 			agent.setDirection( Direction.NORTH );
 			System.out.println( agent.getDirection() );
 		}
+		
+		agent.setScore(--score);
 	}
 
 	@Override

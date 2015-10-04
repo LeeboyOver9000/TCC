@@ -31,7 +31,7 @@ public abstract class UtilityAgent extends GoalAgent {
 	// Calcula qual o melhor plano incluindo as sanções das normas dentro da utilidade do plano
 	protected abstract Plan utilityNormativeFunction(List<Plan> plans);
 	
-	/******************* Métodos para Agentes Orientados a Objetivos *******************/
+	/******************* Métodos do Agentes Orientados a Objetivos *******************/
 	
 	@Override
 	protected Plan planning(Goal goal) {

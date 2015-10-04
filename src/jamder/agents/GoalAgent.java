@@ -3,6 +3,7 @@ package jamder.agents;
 import jamder.Environment;
 import jamder.behavioural.Action;
 import jamder.behavioural.Plan;
+import jamder.exceptions.NormConflictException;
 import jamder.norms.Norm;
 import jamder.norms.NormResource;
 import jamder.norms.NormType;
@@ -17,8 +18,9 @@ import java.util.List;
 public abstract class GoalAgent extends GenericAgent
 {
 	private Hashtable<String, Action> keyActions = new Hashtable<String, Action>();
-	private Hashtable<String, Plan> plans = new Hashtable<String, Plan>();
-	private Hashtable<String, Belief> beliefs = new Hashtable<String, Belief>();
+	private Hashtable<String, Belief> memory = new Hashtable<String, Belief>();
+//	private Hashtable<String, Plan> plans = new Hashtable<String, Plan>();
+	
 	protected Hashtable<String, Norm> restrictBeliefTempNorms = new Hashtable<String, Norm>();
 	protected Hashtable<String, Norm> restrictGoalTempNorms = new Hashtable<String, Norm>();
 	protected Hashtable<String, Norm> restrictPlanTempNorms = new Hashtable<String, Norm>();
@@ -33,6 +35,7 @@ public abstract class GoalAgent extends GenericAgent
 	public void addAgentRole(String name, ProactiveAgentRole role) {
 		super.addAgentRole(name, role);
 		
+		/*		
 		// 4.2.3.1
 		if (role.getAllBeliefs() != null)
 			this.getAllBeliefs().putAll(role.getAllBeliefs());
@@ -40,6 +43,7 @@ public abstract class GoalAgent extends GenericAgent
 		// 3.1.5
 		if (role.getAllGoals() != null)
 			this.getAllGoals().putAll(role.getAllGoals());
+		*/
 	}
 	
 	/******************gets and sets*****************/
@@ -60,19 +64,19 @@ public abstract class GoalAgent extends GenericAgent
 	public void setMainGoal(Goal mainGoal) { this.mainGoal = mainGoal; }
 	
 	// Memories
-	public Belief getMemory(String key) { return beliefs.get(key); }
-	public void addMemory(String key, Belief belief) { beliefs.put(key, belief); }
-	public Belief removeMemory(String key) { return beliefs.remove(key); }
-	public void removeAllMemories() { beliefs.clear(); }
-	public Hashtable<String, Belief> getAllMemories() { return beliefs; }
-	public boolean containMemory(String key) { return beliefs.containsKey(key); }
+	public Belief getMemory(String key) { return memory.get(key); }
+	public void addMemory(String key, Belief belief) { memory.put(key, belief); }
+	public Belief removeMemory(String key) { return memory.remove(key); }
+	public void removeAllMemories() { memory.clear(); }
+	public Hashtable<String, Belief> getAllMemories() { return memory; }
+	public boolean containMemory(String key) { return memory.containsKey(key); }
 	
 	// Plans Library
-	public Plan getPlan(String key) { return plans.get(key); }
+	/*public Plan getPlan(String key) { return plans.get(key); }
 	public void addPlan(String key, Plan plan) { plans.put(key, plan); }
 	public Plan removePlan(String key) { return plans.remove(key); }
 	public void removeAllPlans() { plans.clear(); }
-	public Hashtable<String, Plan> getAllPlans() { return plans; }
+	public Hashtable<String, Plan> getAllPlans() { return plans; }*/
 	
 	// Temporary Plan Norms
 	protected void insertPlanTempNorm(Norm norm) { restrictPlanTempNorms.put(norm.getName(), norm); }
@@ -253,9 +257,13 @@ public abstract class GoalAgent extends GenericAgent
 						}
 					}
 					
-					mainGoal.setNormType( NormType.PERMISSION );
-					goalRunning = mainGoal;
-					return mainGoal;
+					if( mainGoal != null ) {
+						mainGoal.setNormType( NormType.PERMISSION );
+						goalRunning = mainGoal;
+						return mainGoal;
+					} else {
+						return null;
+					}
 				}
 			}
 		}
@@ -272,24 +280,27 @@ public abstract class GoalAgent extends GenericAgent
 		if( actions != null && !actions.isEmpty() ) {
 			for(Action action : actions) {	
 				if( action != null && !containKeyAction(action.getName()) ) {
+					
 					// Check for Obligation norms
 					Norm norm = containsNormAction(action, NormType.OBLIGATION);
 					
-					if( norm != null && actionsNormType == NormType.PERMISSION )
-						actionsNormType = NormType.OBLIGATION; // NormType this action list is OBLIGATION now
-					
-					if( norm != null && actionsNormType == NormType.PROHIBITION ) {
-						return null; // There is a norm conflict in this action list
+					if( norm != null ) {
+						if( actionsNormType == NormType.PROHIBITION ) {
+							throw new NormConflictException("There is a norm conflict on plan's actions");
+						} else {
+							actionsNormType = NormType.OBLIGATION; // NormType this plan is OBLIGATION
+						}
 					}
 					
 					// Check for Prohibition norms
 					norm = containsNormAction(action, NormType.PROHIBITION);
 					
-					if( norm != null && actionsNormType == NormType.PERMISSION )
-						actionsNormType = NormType.PROHIBITION; // NormType this action list is PROHIBITION now
-						
-					if( norm != null && actionsNormType == NormType.OBLIGATION ) {
-						return null; // There is a norm conflict in this action list
+					if( norm != null ) {
+						if( actionsNormType == NormType.OBLIGATION ) {
+							throw new NormConflictException("There is a norm conflict on plan's actions");
+						} else {
+							actionsNormType = NormType.PROHIBITION; // NormType this plan is PROHIBITION
+						}
 					}
 				}
 			}
@@ -309,8 +320,7 @@ public abstract class GoalAgent extends GenericAgent
 				norm = containsNormPlan(pl, NormType.PROHIBITION);
 				if(norm != null) {
 					pl.setNormType(NormType.PROHIBITION);
-				}
-				else {
+				} else {
 					pl.setNormType(NormType.PERMISSION);
 				}
 			}
@@ -319,16 +329,11 @@ public abstract class GoalAgent extends GenericAgent
 		if(plan != null && goalRunning != null) {
 			if( goalRunning.getNormType() == NormType.OBLIGATION ) {
 				plan.setNormType(NormType.OBLIGATION);
-				
 			} else if( goalRunning.getNormType() == NormType.PROHIBITION ) {
 				plan.setNormType( NormType.PROHIBITION );
-				
 			} else {
 				plan.setNormType( NormType.PERMISSION );
 			}
-		} else {
-			// Retornar uma exceção aqui!!!
-			System.out.println("Sorry but all goal are prohibit or the plan isn't formulated to accomplish the goal.");
 		}
 	}
 	
@@ -355,15 +360,14 @@ public abstract class GoalAgent extends GenericAgent
 			}
 				
 			NormType normType = getNormTypeActionList( plan.getActionList() );
-			if( normType != null && normType != NormType.PROHIBITION && plan.getNormType() != NormType.PROHIBITION ) {
+			if( normType != null && normType != NormType.PROHIBITION ) {
 				executePlan(plan);
 				return;
 			}
 		}
 	}
 	
-	public void executePlan(Plan plan)
-	{
+	public void executePlan(Plan plan) {
 		if( plan != null ) {
 			for(Action action : plan.getActionList() ) {				
 				if( action != null ) {

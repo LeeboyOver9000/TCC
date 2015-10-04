@@ -9,22 +9,19 @@ public class MakeTheTour extends Goal
 {
 	private Hunter agent;
 	
-	public MakeTheTour() 
-	{
+	
+	public MakeTheTour() {
 		setName("MakeTheTour");
 		this.agent = null;
 	}
 	
-	public MakeTheTour(Hunter agent)
-	{
+	public MakeTheTour(Hunter agent) {
 		setName("MakeTheTour");
 		this.agent = agent;
 	}
 	
-	public Plan toDo()
-	{
-		if( agent != null )
-		{	
+	public Plan toDo() {
+		if( agent != null ) {	
 			Plan plan = new Plan(agent);
 			agent.addPlan("MakeTheTour", plan);
 			
@@ -32,29 +29,25 @@ public class MakeTheTour extends Goal
 			int x = agent.getKnowledgeBase().getCurrentRoom().getCoordinate().getX();
 			int y = agent.getKnowledgeBase().getCurrentRoom().getCoordinate().getY();
 			
-			if( agent.getDirection() == Direction.EAST )
-			{
+			if( agent.getDirection() == Direction.EAST ) {
 				if( x == size-1 ) {
 					plan.addAction( agent.getKeyAction("TurnRight") );
 				}
 			}
 			
-			if( agent.getDirection() == Direction.SOUTH )
-			{
+			if( agent.getDirection() == Direction.SOUTH ) {
 				if( y == size-1 ) {
 					plan.addAction( agent.getKeyAction("TurnRight") );
 				}
 			}
 			
-			if( agent.getDirection() == Direction.WEST )
-			{
+			if( agent.getDirection() == Direction.WEST ) {
 				if( x == 0 ) {
 					plan.addAction( agent.getKeyAction("TurnRight") );
 				}
 			}
 			
-			if( agent.getDirection() == Direction.NORTH )
-			{
+			if( agent.getDirection() == Direction.NORTH ) {
 				if( y == 0 ) {
 					plan.addAction( agent.getKeyAction("TurnRight") );
 				}
@@ -68,14 +61,12 @@ public class MakeTheTour extends Goal
 		return null;
 	}
 	
-	public boolean isComplete()
-	{
-		if( agent != null )
-		{
+	@Override
+	public boolean isAchieved() {
+		if( agent != null ) {
 			int size = agent.getKnowledgeBase().getMazeSize();
 			
-			for(int i = 0 ; i < size ; i++) 
-			{
+			for(int i = 0 ; i < size ; i++) {
 				if( !agent.getKnowledgeBase().isVisited(0, i) ) {
 					return false;
 				}
@@ -99,8 +90,8 @@ public class MakeTheTour extends Goal
 		return false;
 	}
 	
-	public String toString()
-	{
+	@Override
+	public String toString() {
 		return getName();
 	}
 }

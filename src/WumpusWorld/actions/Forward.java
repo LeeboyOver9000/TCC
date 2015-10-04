@@ -12,6 +12,11 @@ public class Forward extends Action
 	private int y;
 	private Hunter agent;
 	
+	public Forward() {
+		super("Forward");
+		this.agent = null;
+	}
+	
 	public Forward(Hunter agent) {
 		super("Forward");
 		if( agent != null ) {
@@ -26,6 +31,7 @@ public class Forward extends Action
 	public void execute() 
 	{
 		Maze maze = agent.getMaze();
+		int score = agent.getScore();
 		
 		x = agent.getKnowledgeBase().getCurrentRoom().getCoordinate().getX();
 		y = agent.getKnowledgeBase().getCurrentRoom().getCoordinate().getY();
@@ -58,6 +64,7 @@ public class Forward extends Action
 		
 		agent.getKnowledgeBase().updateKnowledgeBase( agent.getKnowledgeBase().getCurrentRoom() );
 		System.out.println( agent.getKnowledgeBase().getCurrentRoom().getName() );
+		agent.setScore(--score);
 	}
 
 	@Override

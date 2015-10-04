@@ -16,10 +16,10 @@ public class GenericAgent extends Agent {
 	
 	private Environment ambient;
 	
-	private Hashtable<String, Action> normativeActions = new Hashtable<String, Action>();
-	private Hashtable<String, Belief> normativeBeliefs = new Hashtable<String, Belief>();
-	private Hashtable<String, Goal> normativeGoals = new Hashtable<String, Goal>();
-	private Hashtable<String, Plan> normativePlans = new Hashtable<String, Plan>();
+	private Hashtable<String, Action> actions = new Hashtable<String, Action>();
+	private Hashtable<String, Belief> beliefs = new Hashtable<String, Belief>();
+	private Hashtable<String, Goal> goals = new Hashtable<String, Goal>();
+	private Hashtable<String, Plan> plans = new Hashtable<String, Plan>();
 	
 	protected Hashtable<String, Norm> restrictNorms = new Hashtable<String, Norm>();
 	private Hashtable<String, AgentRole> agentRoles = new Hashtable<String, AgentRole>();
@@ -38,35 +38,35 @@ public class GenericAgent extends Agent {
 	}
 	
 	// Actions
-	public Action getAction(String key) { return normativeActions.get(key); }
-	public void addAction(String key, Action action) { normativeActions.put(key, action); }
-	public Action removeAction(String key) { return normativeActions.remove(key); }
-	public void removeAllActions() { normativeActions.clear(); }
-	public Hashtable<String, Action> getAllActions() { return normativeActions; }
-	public boolean containAction(String key) { return normativeActions.containsKey(key); }
+	public Action getAction(String key) { return actions.get(key); }
+	public void addAction(String key, Action action) { actions.put(key, action); }
+	public Action removeAction(String key) { return actions.remove(key); }
+	public void removeAllActions() { actions.clear(); }
+	public Hashtable<String, Action> getAllActions() { return actions; }
+	public boolean containAction(String key) { return actions.containsKey(key); }
 	
 	// Beliefs
-	public Belief getBelief(String key) { return normativeBeliefs.get(key); }
-	public void addBelief(String key, Belief belief) { normativeBeliefs.put(key, belief); }
-	public Belief removeBelief(String key) { return normativeBeliefs.remove(key); }
-	public void removeAllBeliefs() { normativeBeliefs.clear(); }
-	public Hashtable<String, Belief> getAllBeliefs() { return normativeBeliefs; }
-	public boolean containBelief(String key) { return normativeBeliefs.containsKey(key); }
+	public Belief getBelief(String key) { return beliefs.get(key); }
+	public void addBelief(String key, Belief belief) { beliefs.put(key, belief); }
+	public Belief removeBelief(String key) { return beliefs.remove(key); }
+	public void removeAllBeliefs() { beliefs.clear(); }
+	public Hashtable<String, Belief> getAllBeliefs() { return beliefs; }
+	public boolean containBelief(String key) { return beliefs.containsKey(key); }
 	
 	// Goals
-	public Goal getGoal(String key) { return normativeGoals.get(key); }
-	public void addGoal(String key, Goal goal) { normativeGoals.put(key, goal); }
-	public Goal removeGoal(String key) { return normativeGoals.remove(key); }
-	public void removeAllGoals() { normativeGoals.clear(); }
-	public Hashtable<String, Goal> getAllGoals() { return normativeGoals; }
-	public boolean containGoal(String key) { return normativeGoals.containsKey(key); }
+	public Goal getGoal(String key) { return goals.get(key); }
+	public void addGoal(String key, Goal goal) { goals.put(key, goal); }
+	public Goal removeGoal(String key) { return goals.remove(key); }
+	public void removeAllGoals() { goals.clear(); }
+	public Hashtable<String, Goal> getAllGoals() { return goals; }
+	public boolean containGoal(String key) { return goals.containsKey(key); }
 	
 	// Plans
-	public Plan getNormativePlan(String key) { return normativePlans.get(key); }
-	public void addNormativePlan(String key, Plan plan) { normativePlans.put(key, plan); }
-	public Plan removeNormativePlan(String key) { return normativePlans.remove(key); }
-	public void removeAllNormativePlans() { normativePlans.clear(); }
-	public Hashtable<String, Plan> getAllNormativePlans() { return normativePlans; }
+	public Plan getPlan(String key) { return plans.get(key); }
+	public void addPlan(String key, Plan plan) { plans.put(key, plan); }
+	public Plan removePlan(String key) { return plans.remove(key); }
+	public void removeAllPlans() { plans.clear(); }
+	public Hashtable<String, Plan> getAllPlans() { return plans; }
 		
 	// AgentRoles
 	public AgentRole getAgentRole(String name) { return agentRoles.get(name); }

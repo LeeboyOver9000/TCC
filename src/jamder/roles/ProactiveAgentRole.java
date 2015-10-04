@@ -5,7 +5,6 @@ import jamder.agents.GenericAgent;
 import jamder.agents.ReflexAgent;
 import jamder.behavioural.Action;
 import jamder.norms.Norm;
-import jamder.norms.NormType;
 import jamder.structural.Belief;
 import jamder.structural.Goal;
 
@@ -66,8 +65,23 @@ public class ProactiveAgentRole extends AgentRole {
 		for( Goal goal : getAllGoals().values() )
 			goal.setNormType(null);*/
 		
-		for( Norm norm : getAllRestrictNorms().values() ) {
-			getPlayer().addRestrictNorm(norm.getName(), norm);
+		for( Norm norm : getAllNorms().values() ) {
+			
+			Action action = norm.getNormResource().getAction();
+			Belief belief = norm.getNormResource().getBelief();
+			Goal goal = norm.getNormResource().getGoal();
+			
+			if( action != null && getPlayer().containAction(action.getName()) ) {
+				getPlayer().addRestrictNorm(norm.getName(), norm);
+			}
+				
+			if( belief != null && getPlayer().containBelief(belief.getName()) ) {
+				getPlayer().addRestrictNorm(norm.getName(), norm);
+			}
+			
+			if( goal != null && getPlayer().containGoal(goal.getName()) ) {
+				getPlayer().addRestrictNorm(norm.getName(), norm);
+			}
 
 			/*Action action = norm.getNormResource().getAction();
 			Belief belief = norm.getNormResource().getBelief();
@@ -88,11 +102,11 @@ public class ProactiveAgentRole extends AgentRole {
 	}
 	
 	/*@Override
-	public void initializeNorm() { // Função aparentimente inútil
+	public void initializeNorm() {
 		checkingNorms();
 
 		for ( Action action : getAllActions().values() ) {
-			//if ( action.getNormType() != null ) {
+			if ( action.getNormType() != null ) {
 				if ( action.getNormType() == NormType.OBLIGATION ) {
 					if ( getPlayer().containAction( action.getName() ) )
 						getPlayer().getAction( action.getName() ).setNormType( NormType.OBLIGATION );
@@ -103,13 +117,14 @@ public class ProactiveAgentRole extends AgentRole {
 					if ( getPlayer().containAction( action.getName() ) )
 						getPlayer().getAction( action.getName() ).setNormType( NormType.PERMISSION );
 				}
-			//}
+			}
 		}
 
 		for( Belief belief : getAllBeliefs().values() ) {
 			if( belief.getNormType() != null ) {
 				getPlayer().addBelief( belief.getName(), belief );
 			}
+			
 			if ( belief.getNormType() == NormType.OBLIGATION ) {
 				if ( getPlayer().containGoal( belief.getName() ) )
 					getPlayer().getGoal( belief.getName() ).setNormType( NormType.OBLIGATION );
@@ -123,7 +138,7 @@ public class ProactiveAgentRole extends AgentRole {
 		}
 		
 		for( Goal goal : getAllGoals().values() ) {
-			//if( goal.getNormType() != null ) {
+			if( goal.getNormType() != null ) {
 				if ( goal.getNormType() == NormType.OBLIGATION ) {
 					if ( getPlayer().containGoal( goal.getName() ) )
 						getPlayer().getGoal( goal.getName() ).setNormType( NormType.OBLIGATION );
@@ -134,7 +149,7 @@ public class ProactiveAgentRole extends AgentRole {
 					if ( getPlayer().containGoal( goal.getName() ) )
 						getPlayer().getGoal( goal.getName() ).setNormType( NormType.PERMISSION );
 				}
-			//}
+			}
 		}
 	}*/
 }

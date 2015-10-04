@@ -16,6 +16,7 @@ public class Climb extends Action
 	public void execute() 
 	{
 		System.out.println("The agent " + agent.getLocalName() + " got away of the cave.");
+		System.out.println("The agent total points: " + agent.getScore());
 		agent.getEnvironment().removeAgent( agent.getLocalName() );
 	}
 

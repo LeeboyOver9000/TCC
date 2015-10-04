@@ -1,5 +1,12 @@
 package WumpusWorld.agents;
 
+import jamder.agents.GoalAgent;
+import jamder.behavioural.Plan;
+import jamder.behavioural.Sensor;
+import jamder.roles.AgentRole;
+import jamder.structural.Belief;
+import jamder.structural.Goal;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -18,18 +25,12 @@ import WumpusWorld.goals.KillTheWumpus;
 import WumpusWorld.goals.LeaveTheCave;
 import WumpusWorld.util.Direction;
 import WumpusWorld.util.KnowledgeBase;
-import WumpusWorld.util.Path;
-import jamder.agents.GoalAgent;
-import jamder.behavioural.Plan;
-import jamder.behavioural.Sensor;
-import jamder.roles.AgentRole;
-import jamder.structural.Belief;
-import jamder.structural.Goal;
 
 public class Hunter extends GoalAgent {	
 	private int gold = 0;
 	private int arrow = 1;
 	private int killedWumpus = 0;
+	private int score = 0;
 	
 	// Knowledge of World
 	private Maze maze;
@@ -117,6 +118,10 @@ public class Hunter extends GoalAgent {
 
 	public boolean isEscapeMode() { return escapeMode; }
 	public void setEscapeMode(boolean escapeMode) { this.escapeMode = escapeMode; }
+	
+	public boolean isFirstStep() { return firstStep; }
+	public void setFirsStep(boolean firstStep) { this.firstStep = firstStep; }
+	
 
 	public Maze getMaze() { return maze; }
 	public void setMaze(Maze maze) { this.maze = maze; }
@@ -129,24 +134,27 @@ public class Hunter extends GoalAgent {
 	
 	public int getAmountGold() { return gold; }
 	public void setAmountGold(int gold) { this.gold = gold; }
+	
+	public int getScore() { return score; }
+	public void setScore(int score) { this.score = score; }
 
 	public List<Room> getRoomToGo() { return roomToGo; }
 	public KnowledgeBase getKnowledgeBase() { return KB; }
 	
-	private void switchMode(String mode) {
-		if(mode.equalsIgnoreCase("GetTheGold")) {
+	public void switchMode(String mode) {
+		if(mode.equalsIgnoreCase("Explorer")) {
 			setExplorerMode(true);
 			setHunterMode(false);
 			setEscapeMode(false);
 		}
 		
-		if(mode.equalsIgnoreCase("KillTheWumpus")) {
+		if(mode.equalsIgnoreCase("Hunter")) {
 			setExplorerMode(false);
 			setHunterMode(true);
 			setEscapeMode(false);
 		}
 		
-		if(mode.equalsIgnoreCase("LeaveTheCave")) {
+		if(mode.equalsIgnoreCase("Escape")) {
 			setExplorerMode(false);
 			setHunterMode(false);
 			setEscapeMode(true);
@@ -231,7 +239,10 @@ public class Hunter extends GoalAgent {
 			Room room = agent.getKnowledgeBase().getCurrentRoom();
 			
 			if( room.isWumpus() || room.isPit() ) {
-				System.out.println("THE AGENT IS FUCK DEAD!");
+				System.out.println("THE AGENT IS DEAD!");
+				int score = agent.getScore() - 1000;
+				agent.setScore(score);
+				System.out.println("The agent total points: " + agent.getScore());
 				ambient.getGame().stop();
 				ambient.removeAgent( getLocalName() );
 			}
@@ -240,12 +251,12 @@ public class Hunter extends GoalAgent {
 			//normProcessBelief(room); // Make norm process on belief
 			
 			Goal goal = formulateGoalFunction(room); // Formulate the goal
-			//goal = normProcessGoal(goal); // Make norm process on belief
+			goal = normProcessGoal(goal); // Make norm process on Goal
 			
 			if( goal != null ) { // if the goal is null, there aren't goals allowed
 				Plan plan = planning(goal);
-				//executeNormativePlan( plan );
-				executePlan(plan);
+				executeNormativePlan( plan );
+				//executePlan(plan);
 			}
 		}
 	}

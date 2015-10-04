@@ -1,5 +1,7 @@
 package WumpusWorld.util;
 
+import jamder.behavioural.Plan;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -24,6 +26,8 @@ public class KnowledgeBase
     private boolean[][] safe;
     private boolean[][] wumpus;
     private boolean[][] pits;
+    
+    private List<Plan> plans = new ArrayList<Plan>();
 	
 	public KnowledgeBase(Hunter agent, Room room, int size, Random random)
 	{
@@ -142,6 +146,24 @@ public class KnowledgeBase
 			glitter[x][y] = value;
 	}
 	
+	public void addPlan(Plan plan) {
+		plans.add(plan);
+	}
+	
+	public Plan getPlan(String name) {
+		for(Plan p : plans) {
+			if(p.getName().equalsIgnoreCase(name)) {
+				return p;
+			}
+		}
+		
+		return null;
+	}
+	
+	public List<Plan> getAllPlans() {
+		return plans;
+	}
+	
 	public void updateKnowledgeBase(Room room) {
 		int x = room.getCoordinate().getX();
 		int y = room.getCoordinate().getY();
@@ -151,8 +173,7 @@ public class KnowledgeBase
 		visited[x][y] = true;
 		safe[x][y] = true;
 			
-		if( !room.isBreeze() && !room.isStench() )
-		{
+		if( !room.isBreeze() && !room.isStench() ) {
 			if( x == 0 ) {
 				if( y == 0 ) {
 					safe[x+1][y] = true;
@@ -367,12 +388,16 @@ public class KnowledgeBase
 				(isVisited(x, y+1) && !isBreeze(x, y+1)) ) {
 				freePit = true;
 			}
-				
-			if( (isVisited(x-1, y) && !isStench(x-1, y)) || 
-				(isVisited(x+1, y) && !isStench(x+1, y)) || 
-				(isVisited(x, y-1) && !isStench(x, y-1)) || 
-				(isVisited(x, y+1) && !isStench(x, y+1)) ) {
+			
+			if( agent.getKilledWumpus() > 0 ) {
 				freeWumpus = true;
+			} else {
+				if( (isVisited(x-1, y) && !isStench(x-1, y)) || 
+					(isVisited(x+1, y) && !isStench(x+1, y)) || 
+					(isVisited(x, y-1) && !isStench(x, y-1)) || 
+					(isVisited(x, y+1) && !isStench(x, y+1)) ) {
+					freeWumpus = true;
+				}
 			}
 				
 			if( freePit && freeWumpus ) {

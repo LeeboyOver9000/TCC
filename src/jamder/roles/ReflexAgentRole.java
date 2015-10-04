@@ -1,17 +1,15 @@
 package jamder.roles;
 
-import java.util.Hashtable;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-
-import jade.core.behaviours.ParallelBehaviour;
 import jamder.Organization;
-import jamder.agents.GenericAgent;
 import jamder.agents.ReflexAgent;
 import jamder.behavioural.Action;
 import jamder.norms.Norm;
 import jamder.norms.NormType;
+
+import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
 
 public class ReflexAgentRole extends AgentRole {
 	
@@ -31,7 +29,7 @@ public class ReflexAgentRole extends AgentRole {
 	}
 
 	protected void transformNorms() {	
-		for( Norm norm : getAllRestrictNorms().values() ) {
+		for( Norm norm : getAllNorms().values() ) {
 			List<Norm> equivalentProhibition = obligationToProhibition(norm);
 
 			if( !equivalentProhibition.isEmpty() ) {
@@ -53,7 +51,7 @@ public class ReflexAgentRole extends AgentRole {
 			Norm permissionNorm = new Norm(norm.getName() + "PER", NormType.PERMISSION, norm.getNormResource(), norm.getNormConstraint());
 			equivalentProhibition.add(permissionNorm);
 			
-			for( Norm nor : getAllRestrictNorms().values() ) {
+			for( Norm nor : getAllNorms().values() ) {
 				if( !nor.getName().equalsIgnoreCase( norm.getName() ) ) {
 					Norm prohibitionNorm = new Norm(nor.getName() + "PRO", NormType.PROHIBITION, nor.getNormResource(), nor.getNormConstraint());
 					equivalentProhibition.add(prohibitionNorm);
@@ -66,8 +64,6 @@ public class ReflexAgentRole extends AgentRole {
 
 	@Override
 	public void checkingNorms() {
-		for ( Action action : getAllActions().values() )
-			action.setNormType(null);
 
 		if( makeTransformNorms == true ) {
 			transformNorms();
@@ -76,17 +72,17 @@ public class ReflexAgentRole extends AgentRole {
 				getPlayer().addRestrictNorm(norm.getName(), norm);
 
 				Action action = norm.getNormResource().getAction();
-				if( action != null && getAllActions().containsKey( action.getName() ) )
-					action.setNormType( norm.getNormType() );
+				if( action != null && getPlayer().containAction(action.getName()) ) {
+					getPlayer().addRestrictNorm(norm.getName(), norm);
+				}
 			}
 		} else {
-			for( Norm norm : getAllRestrictNorms().values() ) {
-				getPlayer().addRestrictNorm(norm.getName(), norm);
-
+			for( Norm norm : getAllNorms().values() ) {
 				Action action = norm.getNormResource().getAction();
-
-				if( action != null && getAllActions().containsKey( action.getName() ) )
-					action.setNormType( norm.getNormType() );
+				
+				if( action != null && getPlayer().containAction(action.getName()) ) {
+					getPlayer().addRestrictNorm(norm.getName(), norm);
+				}
 			}
 		}
 	}

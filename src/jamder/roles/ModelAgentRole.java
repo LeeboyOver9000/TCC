@@ -1,14 +1,10 @@
 package jamder.roles;
 
 import jamder.Organization;
-import jamder.agents.GenericAgent;
 import jamder.agents.ReflexAgent;
 import jamder.behavioural.Action;
 import jamder.norms.Norm;
-import jamder.norms.NormType;
 import jamder.structural.Belief;
-
-import java.util.Hashtable;
 
 public class ModelAgentRole extends AgentRole {
 	
@@ -24,9 +20,19 @@ public class ModelAgentRole extends AgentRole {
 		for( Belief belief : getAllBeliefs().values() )
 			belief.setNormType(null);*/
 
-		for( Norm norm : getAllRestrictNorms().values() ) {
-			getPlayer().addRestrictNorm(norm.getName(), norm);
-
+		for( Norm norm : getAllNorms().values() ) {
+			
+			Action action = norm.getNormResource().getAction();
+			Belief belief = norm.getNormResource().getBelief();
+			
+			if( action != null && getPlayer().containAction(action.getName()) ) {
+				getPlayer().addRestrictNorm(norm.getName(), norm);
+			}
+				
+			if( belief != null && getPlayer().containBelief(belief.getName()) ) {
+				getPlayer().addRestrictNorm(norm.getName(), norm);
+			}
+			
 			/*Action action = norm.getNormResource().getAction();
 			Belief belief = norm.getNormResource().getBelief();
 

@@ -13,13 +13,19 @@ public class KillTheWumpus extends Goal {
 	private Hunter agent;
 	private Stack<Room> path;
 	
+	public KillTheWumpus() {
+		setName("KillTheWumpus");
+		agent = null;
+		path = null;
+	}
+	
 	public KillTheWumpus(Hunter agent) {
 		setName("KillTheWumpus");
 		this.agent = agent;
 		path = new Stack<Room>();
 	}
 	
-	private Direction getWumpusDirection(){
+	private Direction getWumpusDirection() {
 		int size = agent.getMaze().getMazeSize();
 		int x = agent.getKnowledgeBase().getCurrentRoom().getCoordinate().getX();
 		int y = agent.getKnowledgeBase().getCurrentRoom().getCoordinate().getY();
@@ -46,9 +52,9 @@ public class KillTheWumpus extends Goal {
 	private void aimToWumpus(Plan plan) {
 		if( Direction.NORTH == getWumpusDirection() ) {
 			if( agent.getDirection() == Direction.EAST ) {
-				plan.addAction( agent.getKeyAction("TurnRight") );
-			} else if( agent.getDirection() == Direction.WEST ) {
 				plan.addAction( agent.getKeyAction("TurnLeft") );
+			} else if( agent.getDirection() == Direction.WEST ) {
+				plan.addAction( agent.getKeyAction("TurnRight") );
 			} else {
 				plan.addAction( agent.getKeyAction("TurnLeft") );
 				plan.addAction( agent.getKeyAction("TurnLeft") );
@@ -57,9 +63,9 @@ public class KillTheWumpus extends Goal {
 		
 		if( Direction.SOUTH == getWumpusDirection() ) {
 			if( agent.getDirection() == Direction.EAST ) {
-				plan.addAction( agent.getKeyAction("TurnLeft") );
-			} else if( agent.getDirection() == Direction.WEST ) {
 				plan.addAction( agent.getKeyAction("TurnRight") );
+			} else if( agent.getDirection() == Direction.WEST ) {
+				plan.addAction( agent.getKeyAction("TurnLeft") );
 			} else {
 				plan.addAction( agent.getKeyAction("TurnRight") );
 				plan.addAction( agent.getKeyAction("TurnRight") );
@@ -68,9 +74,9 @@ public class KillTheWumpus extends Goal {
 		
 		if( Direction.EAST == getWumpusDirection() ){
 			if( agent.getDirection() == Direction.NORTH ) {
-				plan.addAction( agent.getKeyAction("TurnLeft") );
-			} else if( agent.getDirection() == Direction.SOUTH ) {
 				plan.addAction( agent.getKeyAction("TurnRight") );
+			} else if( agent.getDirection() == Direction.SOUTH ) {
+				plan.addAction( agent.getKeyAction("TurnLeft") );
 			} else {
 				plan.addAction( agent.getKeyAction("TurnRight") );
 				plan.addAction( agent.getKeyAction("TurnRight") );
@@ -79,12 +85,12 @@ public class KillTheWumpus extends Goal {
 		
 		if( Direction.WEST == getWumpusDirection() ) {
 			if( agent.getDirection() == Direction.NORTH ) {
-				plan.addAction( agent.getKeyAction("TurnRight") );
-			} else if( agent.getDirection() == Direction.SOUTH ) {
 				plan.addAction( agent.getKeyAction("TurnLeft") );
+			} else if( agent.getDirection() == Direction.SOUTH ) {
+				plan.addAction( agent.getKeyAction("TurnRight") );
 			} else {
-				plan.addAction( agent.getKeyAction("TurnRight") );
-				plan.addAction( agent.getKeyAction("TurnRight") );
+				plan.addAction( agent.getKeyAction("TurnLeft") );
+				plan.addAction( agent.getKeyAction("TurnLeft") );
 			}
 		}
 	}
@@ -94,24 +100,37 @@ public class KillTheWumpus extends Goal {
 		Direction wumpusDirection = getWumpusDirection();
 		Room currentRoom = agent.getKnowledgeBase().getCurrentRoom();
 		
-		if( wumpusDirection != null ) {
-			if( agent.getDirection() != wumpusDirection ) {
-				aimToWumpus(plan);
-			}
-			plan.addAction( agent.getAction("Shoot") );
-		} else if ( path.isEmpty() ) {
-			if( Path.thereIsUnvisitedSafePlaceToGo(agent) ) {
-				Room target = Path.getTargetRoom(agent);
-				Path.pathfinder(agent, target, path);
-				path.pop();
+		if( agent.getKilledWumpus() < 1 ) {
+			if( wumpusDirection != null ) {
+				if( agent.getDirection() != wumpusDirection ) {
+					aimToWumpus(plan);
+				}
+				
+				plan.addAction( agent.getAction("Shoot") );
+				
 			} else {
-				System.out.println("Sorry, but there is no safe place to go!");
-				Direction direction = agent.getKnowledgeBase().getRandomNextDirection( currentRoom );
-				Path.moveTo( agent, direction, plan );
+				if( agent.isHunterMode() ) {
+					if ( path.isEmpty() ) {
+						if( Path.thereIsUnvisitedSafePlaceToGo(agent) ) {
+							Room target = Path.getTargetRoom(agent);
+							Path.pathfinder(agent, target, path);
+							path.pop();
+						} else {
+							System.out.println("Sorry, but there is no safe place to go!");
+							Direction direction = agent.getKnowledgeBase().getRandomNextDirection( currentRoom );
+							Path.moveTo( agent, direction, plan );
+						}
+					} else {
+						Room room = path.pop();
+						Path.moveToNextRoom(agent, room, plan);
+					}
+				} else {
+					agent.switchMode("Hunter");
+					path.clear();
+				}
 			}
 		} else {
-			Room room = path.pop();
-			Path.moveToNextRoom(agent, room, plan);
+			agent.switchMode("Explorer");
 		}
 		
 		return plan;

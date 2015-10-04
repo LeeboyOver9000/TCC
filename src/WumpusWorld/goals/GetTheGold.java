@@ -15,6 +15,12 @@ public class GetTheGold extends Goal
 	private Hunter agent;
 	private Stack<Room> path;
 	
+	public GetTheGold() {
+		setName("GetTheGold");
+		this.agent = null;
+		this.path = null;
+	}
+	
 	public GetTheGold(Hunter agent) {
 		setName("GetTheGold");
 		this.agent = agent;
@@ -23,30 +29,32 @@ public class GetTheGold extends Goal
 	
 	public Plan toDo() {
 		Plan plan = new Plan(agent);
-		agent.addPlan("GetTheGold", plan);
 		Room currentRoom = agent.getKnowledgeBase().getCurrentRoom();
 		
 		if( currentRoom.isGlitter() ) {
 			plan.addAction( agent.getAction("Grab") );
-		} else if ( path.isEmpty() ) {
-			if( Path.thereIsUnvisitedSafePlaceToGo(agent) ) {
-				Room target = Path.getTargetRoom(agent);
-				Path.pathfinder(agent, target, path);
-				path.pop();
-//				Room room = path.pop();
-//				Path.moveToNextRoom(agent, room, plan);
-			} else {
-				System.out.println("Sorry, but there is no safe place to go!");
-				Direction direction = agent.getKnowledgeBase().getRandomNextDirection( currentRoom );
-				Path.moveTo( agent, direction, plan );
-			}
 		} else {
-			Room room = path.pop();
-			Path.moveToNextRoom(agent, room, plan);
+			if( agent.isExplorerMode() ) {
+				if( path.isEmpty() ) {
+					if( Path.thereIsUnvisitedSafePlaceToGo(agent) ) {
+						Room target = Path.getTargetRoom(agent);
+						Path.pathfinder(agent, target, path);
+						path.pop();
+					} else {
+						System.out.println("Sorry, but there is no safe place to go!");
+						Direction direction = agent.getKnowledgeBase().getRandomNextDirection( currentRoom );
+						Path.moveTo( agent, direction, plan );
+					}
+				} else {
+					Room room = path.pop();
+					Path.moveToNextRoom(agent, room, plan);
+				}
+			} else {
+				agent.switchMode("Explorer");
+				path.clear();
+			}
 		}
 		
 		return plan;
 	}
-	
-	
 }

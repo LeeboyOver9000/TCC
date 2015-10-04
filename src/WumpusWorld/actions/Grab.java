@@ -28,6 +28,10 @@ public class Grab extends Action {
 	public void execute() {
 		int gold = agent.getAmountGold();
 		agent.setAmountGold(++gold);
+		
+		int score = agent.getScore() + 1000;
+		agent.setScore(score);
+		
 		System.out.println("The agent put the gold in his bag.");
 		agent.getMaze().getRoom(x, y).setGold(false);
 		agent.getMaze().getRoom(x, y).setGlitter(false);

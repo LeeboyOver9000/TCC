@@ -30,7 +30,7 @@ public class Game extends JPanel implements Runnable
 	
 	public Game() {
 		environment = new WumpusLabyrinth("The-Wumpus-World", "localhost", "2424", this);
-		start();	
+		start();
 	}
 
 	private void doDrawing(Graphics g) {

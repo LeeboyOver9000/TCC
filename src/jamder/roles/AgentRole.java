@@ -2,10 +2,7 @@ package jamder.roles;
 
 import jamder.Organization;
 import jamder.agents.GenericAgent;
-import jamder.behavioural.Action;
 import jamder.norms.Norm;
-import jamder.structural.Belief;
-import jamder.structural.Goal;
 
 import java.util.Hashtable;
 
@@ -15,10 +12,10 @@ public abstract class AgentRole {
 	private GenericAgent player;
 	private Organization owner;
 	
-	private Hashtable<String, Action> actions = new Hashtable<String, Action>();
-	private Hashtable<String, Belief> beliefs = new Hashtable<String, Belief>();
+//	private Hashtable<String, Action> actions = new Hashtable<String, Action>();
+//	private Hashtable<String, Belief> beliefs = new Hashtable<String, Belief>();
 	
-	protected Hashtable<String, Norm> restrictNorms = new Hashtable<String, Norm>();
+	protected Hashtable<String, Norm> norms = new Hashtable<String, Norm>();
 	
 	public AgentRole(String name, Organization owner, GenericAgent player) {
 		setName( name );
@@ -46,6 +43,7 @@ public abstract class AgentRole {
 	public void setPlayer(GenericAgent player) { this.player = player; }
 	public GenericAgent getPlayer() { return player; }
 	
+	/*
 	// Beliefs
 	public Belief getBelief(String key) { return beliefs.get(key); }
 	public void addBelief(String key, Belief belief) { beliefs.put(key, belief); }
@@ -60,14 +58,15 @@ public abstract class AgentRole {
 	public void removeAllActions() { actions.clear();}
 	public Hashtable<String, Action> getAllActions() { return actions; }
 	public boolean containAction(String key) { return actions.containsKey(key); }
-
+	*/
+	
 	// Restricts Norms
-	protected Norm getRestrictNorm(String key) { return restrictNorms.get(key); }
-	public void addRestrictNorm(String key, Norm restrictNorm) { restrictNorms.put(key, restrictNorm); }
-	public Norm removeRestrictNorm(String key) { return restrictNorms.remove(key); }
-	protected void removeAllRestrictNorms() { restrictNorms.clear(); }
-	protected Hashtable<String, Norm> getAllRestrictNorms() { return restrictNorms; }
+	protected Norm getNorm(String key) { return norms.get(key); }
+	public void addNorm(String key, Norm restrictNorm) { norms.put(key, restrictNorm); }
+	public Norm removeNorm(String key) { return norms.remove(key); }
+	protected void removeAllNorms() { norms.clear(); }
+	protected Hashtable<String, Norm> getAllNorms() { return norms; }
 	
 	public abstract void checkingNorms();
-	//public abstract void initializeNorm();
+//	public abstract void initializeNorm();
 }

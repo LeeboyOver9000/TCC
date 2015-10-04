@@ -14,6 +14,12 @@ public class LeaveTheCave extends Goal
 	private Hunter agent;
 	private Stack<Room> path;
 	
+	public LeaveTheCave() {
+		setName("LeaveTheCave");
+		this.agent = null;
+		path = null;
+	}
+	
 	public LeaveTheCave(Hunter agent) {
 		setName("LeaveTheCave");
 		this.agent = agent;
@@ -22,20 +28,27 @@ public class LeaveTheCave extends Goal
 	
 	public Plan toDo() {
 		Plan plan = new Plan(agent);
-		agent.addPlan("LeaveTheCave", plan);
+		Room currentRoom = agent.getKnowledgeBase().getCurrentRoom();
 		
-		int x = agent.getKnowledgeBase().getCurrentRoom().getCoordinate().getX();
-		int y = agent.getKnowledgeBase().getCurrentRoom().getCoordinate().getY();
+		int x = currentRoom.getCoordinate().getX();
+		int y = currentRoom.getCoordinate().getY();
 		
 		if( x == 0 && y == 0 ) {
 			plan.addAction( agent.getAction("Climb") );
-		} else if ( path.isEmpty() ) {
-			Room target = new Room(0, 0);
-			Path.pathfinder(agent, target, path);
-			path.pop();
 		} else {
-			Room room = path.pop();
-			Path.moveToNextRoom(agent, room, plan);
+			if ( agent.isEscapeMode() ) {
+				if ( path.isEmpty() ) {
+					Room target = new Room(0, 0);
+					Path.pathfinder(agent, target, path);
+					path.pop();
+				} else {
+					Room room = path.pop();
+					Path.moveToNextRoom(agent, room, plan);
+				}
+			} else {
+				agent.switchMode("Escape");
+				path.clear();
+			}
 		}
 		
 		return plan;
