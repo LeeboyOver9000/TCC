@@ -14,6 +14,7 @@ public class KnowledgeBase
 {
 	private Room initialRoom;
 	private Room currentRoom;
+	private Room previousRoom = null;
 	
 	private int maze_size;
 	private Random random;
@@ -29,8 +30,7 @@ public class KnowledgeBase
     
     private List<Plan> plans = new ArrayList<Plan>();
 	
-	public KnowledgeBase(Hunter agent, Room room, int size, Random random)
-	{
+	public KnowledgeBase(Hunter agent, Room room, int size, Random random) {
 		maze_size = size;
 		this.random = random;
 		this.agent = agent;
@@ -68,7 +68,9 @@ public class KnowledgeBase
 	public Room getInitialRoom() { return initialRoom; }
 	public Room getCurrentRoom() { return currentRoom; }
 	public void setCurrentRoom(Room currentRoom) { this.currentRoom = currentRoom; }
-	
+	public Room getPreviousRoom() { return previousRoom; }
+	public void setPreviousRoom(Room previousRoom) { this.previousRoom = previousRoom; }
+
 	public boolean isVisited(int x, int y) {
 		if(x >= 0 && x < maze_size && y >= 0 && y < maze_size)
 			return visited[x][y];
@@ -478,6 +480,15 @@ public class KnowledgeBase
 					return true;
 		
 		return false;
+	}
+	
+	public Coordinate hunterKnowWhereGoldIs() {
+		for(int i = 0 ; i < maze_size ; i++)
+			for(int j = 0 ; j < maze_size ; j++)
+				if( isGlitter(i, j) )
+					return new Coordinate(i,j);
+		
+		return null;
 	}
 	
 	public Direction getRandomNextDirection(Room room) {

@@ -5,6 +5,7 @@ import jamder.structural.Goal;
 
 import java.util.Stack;
 
+import WumpusWorld.Coordinate;
 import WumpusWorld.Room;
 import WumpusWorld.agents.Hunter;
 import WumpusWorld.util.Direction;
@@ -36,7 +37,12 @@ public class GetTheGold extends Goal
 		} else {
 			if( agent.isExplorerMode() ) {
 				if( path.isEmpty() ) {
-					if( Path.thereIsUnvisitedSafePlaceToGo(agent) ) {
+					Coordinate coordinate = agent.getKnowledgeBase().hunterKnowWhereGoldIs();
+					if( coordinate != null ) {
+						Room target = new Room(coordinate.getX(), coordinate.getY());
+						Path.pathfinder(agent, target, path);
+						path.pop();
+					} else if( Path.thereIsUnvisitedSafePlaceToGo(agent) ) {
 						Room target = Path.getTargetRoom(agent);
 						Path.pathfinder(agent, target, path);
 						path.pop();

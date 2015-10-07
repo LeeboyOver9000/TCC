@@ -25,6 +25,7 @@ import WumpusWorld.goals.KillTheWumpus;
 import WumpusWorld.goals.LeaveTheCave;
 import WumpusWorld.util.Direction;
 import WumpusWorld.util.KnowledgeBase;
+import WumpusWorld.util.Path;
 
 public class Hunter extends GoalAgent {	
 	private int gold = 0;
@@ -211,17 +212,11 @@ public class Hunter extends GoalAgent {
 	protected List<Plan> successorFunction(Belief belief) {
 		List<Plan> plans = new ArrayList<Plan>();
 		
-		/*Room room = (Room) belief;
+//		Room room = (Room) belief;
+		
 		Plan plan = new Plan(this);
-		
-		int x = room.getCoordinate().getX();
-		int y = room.getCoordinate().getY();
-		
-		if(x == 0 && y == 1) {
-			Path.moveTo(this, Direction.EAST, plan);
-		}
-		
-		plans.add(plan);*/
+		Path.moveToNextRoom(this, KB.getPreviousRoom(), plan);
+		plans.add(plan);
 		
 		return plans;
 	}
@@ -243,12 +238,13 @@ public class Hunter extends GoalAgent {
 				int score = agent.getScore() - 1000;
 				agent.setScore(score);
 				System.out.println("The agent total points: " + agent.getScore());
+//				System.out.println(agent.getScore());
 				ambient.getGame().stop();
 				ambient.removeAgent( getLocalName() );
 			}
 			
 			room = (Room) nextFunction(room); // Updates the knowledge base
-			//normProcessBelief(room); // Make norm process on belief
+			normProcessBelief(room); // Make norm process on belief
 			
 			Goal goal = formulateGoalFunction(room); // Formulate the goal
 			goal = normProcessGoal(goal); // Make norm process on Goal
@@ -256,7 +252,6 @@ public class Hunter extends GoalAgent {
 			if( goal != null ) { // if the goal is null, there aren't goals allowed
 				Plan plan = planning(goal);
 				executeNormativePlan( plan );
-				//executePlan(plan);
 			}
 		}
 	}

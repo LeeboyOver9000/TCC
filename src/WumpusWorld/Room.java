@@ -19,6 +19,8 @@ public class Room extends Belief implements Comparable<Room>
 	private Room roomLeft = null;
 	private Room roomRight = null;
 	
+	public Room(){};
+	
 	public Room(int x, int y) {
 		setName("Room[" + x + "][" + y + "]");
 		coordinate = new Coordinate(x, y);
@@ -83,7 +85,7 @@ public class Room extends Belief implements Comparable<Room>
 	public String toString() {
 		return getName();
 	}
-
+	
 	@Override
 	public int compareTo(Room room) {
 		return this.getName().compareTo( room.getName() );

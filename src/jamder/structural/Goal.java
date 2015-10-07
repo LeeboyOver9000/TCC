@@ -6,8 +6,7 @@ import jamder.norms.NormType;
 import java.util.Hashtable;
 
 
-public class Goal extends Property<String>  
-{
+public class Goal {
 	private String name;
 	private boolean achieved;
 	private NormType normType = null;

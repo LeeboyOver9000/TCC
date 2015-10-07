@@ -1,7 +1,6 @@
 package jamder.structural;
 
-public class Property <T extends Comparable<T>>
-{
+public class Property <T extends Comparable<T>> {
 	private String name;
 	private String type;
 	private T value;

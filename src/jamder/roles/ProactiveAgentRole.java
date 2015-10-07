@@ -74,12 +74,13 @@ public class ProactiveAgentRole extends AgentRole {
 			if( action != null && getPlayer().containAction(action.getName()) ) {
 				getPlayer().addRestrictNorm(norm.getName(), norm);
 			}
-				
-			if( belief != null && getPlayer().containBelief(belief.getName()) ) {
+			
+			if( goal != null && getPlayer().containGoal(goal.getName()) ) {
 				getPlayer().addRestrictNorm(norm.getName(), norm);
 			}
 			
-			if( goal != null && getPlayer().containGoal(goal.getName()) ) {
+			if( belief != null ) {
+				getPlayer().addBelief(belief.getName(), belief);
 				getPlayer().addRestrictNorm(norm.getName(), norm);
 			}
 

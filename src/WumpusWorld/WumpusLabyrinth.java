@@ -2,37 +2,31 @@ package WumpusWorld;
 
 import jamder.Environment;
 import jamder.Organization;
-import jamder.agents.GoalAgent;
 import jamder.behavioural.Action;
 import jamder.norms.After;
-import jamder.norms.Between;
-import jamder.norms.IfConditional;
+import jamder.norms.IfBeliefHappen;
+import jamder.norms.IfGoalAchieved;
 import jamder.norms.Norm;
 import jamder.norms.NormConstraint;
 import jamder.norms.NormResource;
 import jamder.norms.NormType;
 import jamder.norms.Operator;
 import jamder.roles.ProactiveAgentRole;
-import jamder.structural.Belief;
 import jamder.structural.Goal;
-import jamder.structural.Property;
 
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.Hashtable;
-import java.util.Random;
 
-import WumpusWorld.actions.Forward;
 import WumpusWorld.actions.Grab;
 import WumpusWorld.agents.Hunter;
 import WumpusWorld.goals.GetTheGold;
 import WumpusWorld.goals.KillTheWumpus;
-import WumpusWorld.goals.MakeTheTour;
 import WumpusWorld.gui.Game;
 import WumpusWorld.util.Direction;
 
-public class WumpusLabyrinth extends Environment
-{	
+public class WumpusLabyrinth extends Environment {
+	
 	private Game game;
 	private Maze maze;
 	
@@ -41,47 +35,56 @@ public class WumpusLabyrinth extends Environment
 		this.game = game;
 	}
 	
-	public void start()
-	{
+	public void start() {
 		maze = new Maze();
 		addObject("Labyrinth",maze);
 		
 		Organization wumpusHuntersOrg = new Organization("WumpusHuntersOrg", this, null);
 		addOrganization( "WumpusHuntersOrg", wumpusHuntersOrg );
 		
-		Hashtable<String, NormConstraint> constraint = new Hashtable<String, NormConstraint>();
+		Hashtable<String, NormConstraint> constraint1 = new Hashtable<String, NormConstraint>();
+		Hashtable<String, NormConstraint> constraint2 = new Hashtable<String, NormConstraint>();
+		Hashtable<String, NormConstraint> constraint3 = new Hashtable<String, NormConstraint>();
+		Hashtable<String, NormConstraint> constraint4 = new Hashtable<String, NormConstraint>();
 		
-		// Active Norm Constraint
-		Calendar date1 = new GregorianCalendar(2014, GregorianCalendar.OCTOBER, 20, 0, 0, 0);
-		//Calendar date2 = new GregorianCalendar(2015, GregorianCalendar.OCTOBER, 21, 0, 0, 0);
+		Goal goal1 = new KillTheWumpus();
+		NormResource nreGoal1 = new NormResource(goal1);
+		Norm norm1 = new Norm("N1", NormType.OBLIGATION, nreGoal1, constraint2);
 		
-		NormConstraint time = new After(date1);
-		constraint.put("Time", time);
-		
-		/*Goal goal = new GetTheGold();
-		NormResource nreGoal = new NormResource(goal);
-		Norm norm1 = new Norm("N1", NormType.PROHIBITION, nreGoal, constraint);*/
-		
-		Goal goal = new KillTheWumpus();
-		NormResource nreGoal = new NormResource(goal);
-		Norm norm1 = new Norm("N1", NormType.OBLIGATION, nreGoal, constraint);
-		
-		Room belief = new Room(0,1);
+		Room belief = new Room(1,0);
+		belief.setStench(true);
 		NormResource nreBelief = new NormResource(belief);
-		Norm norm2 = new Norm("N2", NormType.PROHIBITION, nreBelief, constraint);
+		Norm norm2 = new Norm("N2", NormType.OBLIGATION, nreBelief, constraint3);
 		
-		Action action = new Forward();
+		Action action = new Grab();
 		NormResource nreAction = new NormResource(action);
-		Norm norm3 = new Norm("N3", NormType.PROHIBITION, nreAction, constraint);
+		Norm norm3 = new Norm("N3", NormType.PROHIBITION, nreAction, constraint1);
+		
+		Goal goal2 = new GetTheGold();
+		NormResource nreGoal2 = new NormResource(goal2);
+		Norm norm4 = new Norm("N4", NormType.PROHIBITION, nreGoal2, constraint4);
 		
 		ProactiveAgentRole hunterRole = new ProactiveAgentRole("HunterRole", wumpusHuntersOrg, null);
 		
-//		hunterRole.addNorm(norm1.getName(), norm1);
-//		hunterRole.addNorm(norm2.getName(), norm2);
-//		hunterRole.addNorm(norm3.getName(), norm3);
+//		hunterRole.addNorm(norm1.getName(), norm1); // Goal Norm (KillWumpus)
+//		hunterRole.addNorm(norm2.getName(), norm2); // Belief Norm
+//		hunterRole.addNorm(norm3.getName(), norm3); // Action Norm
+//		hunterRole.addNorm(norm4.getName(), norm4); // Goal Norm (GetGold)
 		
 		Hunter hunter = new Hunter("Hunter", this, hunterRole, maze, maze.getRoom(0, 0), Direction.EAST);
 		addAgent("Hunter", hunter);
+		
+		// Norms Constraint
+		Calendar date = new GregorianCalendar(2014, GregorianCalendar.OCTOBER, 20, 0, 0, 0);
+		NormConstraint time = new After(date);
+		NormConstraint priorityGoal = new IfGoalAchieved( Operator.NOT_ACHIEVED, hunter.getGoal("KillTheWumpus") );
+		NormConstraint dontBeRich = new IfGoalAchieved(Operator.NOT_ACHIEVED, hunter.getGoal("GetTheGold"));
+		NormConstraint fleeWumpus = new IfBeliefHappen(Operator.IT_IS, belief);
+		
+		constraint1.put("Time", time);
+		constraint2.put("PriorityGoal", priorityGoal);
+		constraint3.put("FleeOfWumpus", fleeWumpus);
+		constraint4.put("DontBeRich", dontBeRich);
 	}
 	
 	public Game getGame() { return game; }

@@ -186,13 +186,14 @@ public abstract class GoalAgent extends GenericAgent
 	/********************************************************************************************************************/
 	
 	public void normProcessBelief(Belief belief) {
-		//deleteBeliefTempNorm();
-		//removeAllPlans();
+		deletePlanTempNorm();
+		removeAllPlans();
 		
-		if( containBelief( belief.getName() ) ) {
+		if( belief != null && containBelief( belief.getName() ) ) {
 			List<Plan> plans = successorFunction( belief );
 			if(plans != null) {
 				Norm norm = containsNormBelief(belief, NormType.OBLIGATION);
+				
 				if( norm != null ) {
 					int count = 0;
 					for(Plan plan : plans) {
@@ -200,19 +201,20 @@ public abstract class GoalAgent extends GenericAgent
 						addPlan("CurrentBeliefPlan" + count, plan);
 						NormResource resource = new NormResource(plan);
 						Norm normTemp = new Norm( norm.getName() + "TEMP" + count, NormType.OBLIGATION, resource, norm.getNormConstraint() );
-						insertBeliefTempNorm(normTemp);
+						insertPlanTempNorm(normTemp);
 					}
 				}
 					
 				norm = containsNormBelief(belief, NormType.PROHIBITION);
-				if( norm != null ) {	
+				if( norm != null ) {
 					int count = 0;
+					
 					for(Plan plan : plans) {
 						count++;
 						addPlan("CurrentBeliefPlan" + count, plan);
 						NormResource resource = new NormResource(plan);
 						Norm normTemp = new Norm( norm.getName() + "TEMP" + count, NormType.PROHIBITION, resource, norm.getNormConstraint() );
-						insertBeliefTempNorm(normTemp);
+						insertPlanTempNorm(normTemp);
 					}
 				}
 			}

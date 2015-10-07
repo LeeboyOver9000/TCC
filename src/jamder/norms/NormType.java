@@ -1,7 +1,6 @@
 package jamder.norms;
 
-public enum NormType
-{
+public enum NormType {
 	PERMISSION,
 	PROHIBITION,
 	OBLIGATION;

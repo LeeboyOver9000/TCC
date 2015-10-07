@@ -2,6 +2,7 @@ package WumpusWorld.actions;
 
 import jamder.behavioural.Action;
 import WumpusWorld.Maze;
+import WumpusWorld.Room;
 import WumpusWorld.agents.Hunter;
 import WumpusWorld.util.Direction;
 import WumpusWorld.util.Path;
@@ -32,11 +33,14 @@ public class Forward extends Action
 	{
 		Maze maze = agent.getMaze();
 		int score = agent.getScore();
+		Room currentRoom = agent.getKnowledgeBase().getCurrentRoom();
 		
 		x = agent.getKnowledgeBase().getCurrentRoom().getCoordinate().getX();
 		y = agent.getKnowledgeBase().getCurrentRoom().getCoordinate().getY();
 		
 		System.out.print(agent.getKnowledgeBase().getCurrentRoom().getName() + " -> ");
+		
+		agent.getKnowledgeBase().setPreviousRoom( currentRoom );
 		
 		if( agent.getDirection() == Direction.NORTH ) {
 			Path.addNextNode(agent.getKnowledgeBase().getCurrentRoom(), maze.getRoom(x, y-1), Direction.NORTH);

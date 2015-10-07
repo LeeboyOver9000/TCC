@@ -6,14 +6,12 @@ import jamder.Organization;
 import jamder.Protocol;
 import jamder.agents.GenericAgent;
 import jamder.behavioural.Action;
-import jamder.behavioural.Method;
 import jamder.behavioural.Plan;
 import jamder.roles.AgentRole;
 import jamder.structural.Belief;
 import jamder.structural.Goal;
 
-public class NormResource
-{
+public class NormResource {
 	private GenericAgent agent;
 	private AgentRole role;
 	private Organization organization;

@@ -2,8 +2,7 @@ package jamder.norms;
 
 import jamder.structural.Property;
 
-public class IfConditional<T extends Comparable<T> > extends NormConstraint
-{
+public class IfConditional<T extends Comparable<T> > extends NormConstraint {
 	private Operator operator;
 	private Property<T> firstProperty;
 	private Property<T> secondProperty;
@@ -14,15 +13,15 @@ public class IfConditional<T extends Comparable<T> > extends NormConstraint
 		this.secondProperty = secondProperty;
 	}
 
-	/******************gest and sets*****************/
+	/******************gets and sets*****************/
 
 	public Property<T> getFirstProperty() { return firstProperty; }
 	public void setFirstProperty(Property<T> firstProperty) { this.firstProperty = firstProperty; }
 	public Property<T> getSecondProperty() { return secondProperty; }
 	public void setSecondProperty(Property<T> secondProperty) { this.secondProperty = secondProperty; }
 	public Operator getOperator() { return operator; }
-	public void setOperator(Operator operator) { this.operator = operator; }
-	
+	public void setOperator(Operator operator) { this.operator = operator; }	
+
 	/************************************************/
 
 	public boolean isTrue() {

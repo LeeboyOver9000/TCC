@@ -1,7 +1,10 @@
 package jamder.norms;
 
-public enum Operator 
-{
+public enum Operator {
+	ACHIEVED,
+	NOT_ACHIEVED,
+	IT_IS,
+	NOT_IT_IS,
 	LESS_THAN,
 	GREATER_THAN,
 	EQUAL_TO,

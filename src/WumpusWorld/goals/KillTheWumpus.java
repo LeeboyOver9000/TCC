@@ -9,7 +9,7 @@ import WumpusWorld.agents.Hunter;
 import WumpusWorld.util.Direction;
 import WumpusWorld.util.Path;
 
-public class KillTheWumpus extends Goal {	
+public class KillTheWumpus extends Goal {
 	private Hunter agent;
 	private Stack<Room> path;
 	
@@ -100,7 +100,7 @@ public class KillTheWumpus extends Goal {
 		Direction wumpusDirection = getWumpusDirection();
 		Room currentRoom = agent.getKnowledgeBase().getCurrentRoom();
 		
-		if( agent.getKilledWumpus() < 1 ) {
+		if( !isAchieved() ) {
 			if( wumpusDirection != null ) {
 				if( agent.getDirection() != wumpusDirection ) {
 					aimToWumpus(plan);
@@ -135,4 +135,12 @@ public class KillTheWumpus extends Goal {
 		
 		return plan;
 	}
+	
+	@Override
+	public boolean isAchieved() { 
+		if( agent.getKilledWumpus() > 0 )
+			return true;
+		
+		return false;
+	}	
 }

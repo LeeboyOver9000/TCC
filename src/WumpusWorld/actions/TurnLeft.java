@@ -8,15 +8,13 @@ public class TurnLeft extends Action
 {
 	private Hunter agent;
 	
-	public TurnLeft(Hunter agent)
-	{
+	public TurnLeft(Hunter agent) {
 		super("TurnLeft");
 		this.agent = agent;
 	}
 	
 	@Override
-	public void execute() 
-	{
+	public void execute() {
 		int score = agent.getScore();
 		
 		if( agent.getDirection() == Direction.NORTH ) 
