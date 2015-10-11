@@ -1,6 +1,7 @@
 package WumpusWorld.util;
 
 import jamder.behavioural.Plan;
+import jamder.structural.Belief;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -10,8 +11,8 @@ import WumpusWorld.Coordinate;
 import WumpusWorld.Room;
 import WumpusWorld.agents.Hunter;
 
-public class KnowledgeBase 
-{
+public class KnowledgeBase extends Belief {
+	
 	private Room initialRoom;
 	private Room currentRoom;
 	private Room previousRoom = null;
@@ -552,5 +553,14 @@ public class KnowledgeBase
 		}
 		
 		return dice[direction];
+	}
+	
+	@Override
+	public boolean isNormativeState() {
+		if( agent.getArrow() > 1) {
+			return true;
+		}
+		
+		return false;
 	}
 }

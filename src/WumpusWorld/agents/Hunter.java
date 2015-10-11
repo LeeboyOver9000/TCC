@@ -86,12 +86,12 @@ public class Hunter extends GoalAgent {
 		grab = new Grab(this);
 		climb = new Climb(this);
 		
-		addKeyAction(forward.getName(), forward);
-		addKeyAction(turnLeft.getName(), turnLeft);
-		addKeyAction(turnRight.getName(), turnRight);
-		addAction(shoot.getName(), shoot);
-		addAction(grab.getName(), grab);
-		addAction(climb.getName(), climb);
+		addKeyAction(forward);
+		addKeyAction(turnLeft);
+		addKeyAction(turnRight);
+		addAction(shoot);
+		addAction(grab);
+		addAction(climb);
 		
 		// Main Goal of this Agent
 		setMainGoal(getGold);
@@ -215,8 +215,12 @@ public class Hunter extends GoalAgent {
 //		Room room = (Room) belief;
 		
 		Plan plan = new Plan(this);
-		Path.moveToNextRoom(this, KB.getPreviousRoom(), plan);
+		plan.addAction(grab);
 		plans.add(plan);
+		
+		/* For Test
+		Path.moveToNextRoom(this, KB.getPreviousRoom(), plan);
+		plans.add(plan);*/
 		
 		return plans;
 	}
@@ -248,6 +252,8 @@ public class Hunter extends GoalAgent {
 			
 			Goal goal = formulateGoalFunction(room); // Formulate the goal
 			goal = normProcessGoal(goal); // Make norm process on Goal
+			
+//			System.out.println(goal.getName()); // For Debug
 			
 			if( goal != null ) { // if the goal is null, there aren't goals allowed
 				Plan plan = planning(goal);

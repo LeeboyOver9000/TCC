@@ -14,12 +14,13 @@ import jamder.structural.Goal;
 
 import java.util.Hashtable;
 import java.util.List;
+import java.util.PriorityQueue;
 
 public abstract class GoalAgent extends GenericAgent
 {
 	private Hashtable<String, Action> keyActions = new Hashtable<String, Action>();
 	private Hashtable<String, Belief> memory = new Hashtable<String, Belief>();
-//	private Hashtable<String, Plan> plans = new Hashtable<String, Plan>();
+	private PriorityQueue<Plan> normativePlans = new PriorityQueue<Plan>();
 	
 	protected Hashtable<String, Norm> restrictBeliefTempNorms = new Hashtable<String, Norm>();
 	protected Hashtable<String, Norm> restrictGoalTempNorms = new Hashtable<String, Norm>();
@@ -50,9 +51,9 @@ public abstract class GoalAgent extends GenericAgent
 	
 	// Key Actions
 	public Action getKeyAction(String key) { return keyActions.get(key); }
-	public void addKeyAction(String key, Action action) {
+	public void addKeyAction(Action action) {
 		action.setNormType(NormType.PERMISSION);
-		keyActions.put(key, action);
+		keyActions.put(action.getName(), action);
 	}
 	public Action removeKeyAction(String key) {	return keyActions.remove(key); }
 	public void removeAllKeyActions() {	keyActions.clear();	}
@@ -71,12 +72,11 @@ public abstract class GoalAgent extends GenericAgent
 	public Hashtable<String, Belief> getAllMemories() { return memory; }
 	public boolean containMemory(String key) { return memory.containsKey(key); }
 	
-	// Plans Library
-	/*public Plan getPlan(String key) { return plans.get(key); }
-	public void addPlan(String key, Plan plan) { plans.put(key, plan); }
-	public Plan removePlan(String key) { return plans.remove(key); }
-	public void removeAllPlans() { plans.clear(); }
-	public Hashtable<String, Plan> getAllPlans() { return plans; }*/
+	// Normative Plans Library
+	public Plan getNormativePlan(Plan key) { return normativePlans.peek(); }
+	public void addNormativePlan(Plan plan) { normativePlans.add(plan); }
+	public void removeAllNormativePlans() { normativePlans.clear(); }
+	public PriorityQueue<Plan> getAllNormtivePlans() { return normativePlans; }
 	
 	// Temporary Plan Norms
 	protected void insertPlanTempNorm(Norm norm) { restrictPlanTempNorms.put(norm.getName(), norm); }
@@ -187,33 +187,41 @@ public abstract class GoalAgent extends GenericAgent
 	
 	public void normProcessBelief(Belief belief) {
 		deletePlanTempNorm();
-		removeAllPlans();
+		removeAllNormativePlans();
 		
+		// Verify whether the agent has the belief referenced in parameter variable
 		if( belief != null && containBelief( belief.getName() ) ) {
+			
+			// Function responsible for return plans if the agent contains the belief
 			List<Plan> plans = successorFunction( belief );
 			if(plans != null) {
-				Norm norm = containsNormBelief(belief, NormType.OBLIGATION);
 				
-				if( norm != null ) {
+				// Verify for active obligation norm restricting the belief
+				Norm norm = containsNormBelief(belief, NormType.OBLIGATION);
+				if( norm != null ) { // if exist a obligation norm
 					int count = 0;
+					
 					for(Plan plan : plans) {
 						count++;
-						addPlan("CurrentBeliefPlan" + count, plan);
+						addNormativePlan(plan);
 						NormResource resource = new NormResource(plan);
-						Norm normTemp = new Norm( norm.getName() + "TEMP" + count, NormType.OBLIGATION, resource, norm.getNormConstraint() );
+						Norm normTemp = new Norm( norm.getName() + "TEMP" + count, 
+								NormType.OBLIGATION, resource, norm.getNormConstraint() );
 						insertPlanTempNorm(normTemp);
 					}
 				}
-					
+				
+				// Verify for active prohibition norm restricting the belief
 				norm = containsNormBelief(belief, NormType.PROHIBITION);
-				if( norm != null ) {
+				if( norm != null ) { // if exist a prohibition norm 
 					int count = 0;
 					
 					for(Plan plan : plans) {
 						count++;
-						addPlan("CurrentBeliefPlan" + count, plan);
+						addNormativePlan(plan);
 						NormResource resource = new NormResource(plan);
-						Norm normTemp = new Norm( norm.getName() + "TEMP" + count, NormType.PROHIBITION, resource, norm.getNormConstraint() );
+						Norm normTemp = new Norm( norm.getName() + "TEMP" + count, 
+								NormType.PROHIBITION, resource, norm.getNormConstraint() );
 						insertPlanTempNorm(normTemp);
 					}
 				}
@@ -232,7 +240,8 @@ public abstract class GoalAgent extends GenericAgent
 			goal.setNormType( NormType.OBLIGATION );
 		} else {
 			norm = containsNormGoalDiferent(goal, NormType.OBLIGATION);
-			if( norm != null ) {	
+			// if the agent has active obligation norm restricting other goals
+			if( norm != null ) {
 				for( Goal gl :  getAllGoals().values() ) {
 					norm = containsNormGoal(gl, NormType.OBLIGATION);
 					
@@ -244,6 +253,7 @@ public abstract class GoalAgent extends GenericAgent
 				}
 			} else {
 				norm = containsNormGoal(goal, NormType.PROHIBITION);
+				// if the agent has active prohibition norm restricting the goal
 				if( norm != null ) {
 					goal.setNormType( NormType.PROHIBITION );
 					
@@ -314,7 +324,8 @@ public abstract class GoalAgent extends GenericAgent
 	/********************************************************************************************************************/
 	
 	public void normProcessPlan(Plan plan) {
-		for( Plan pl : getAllPlans().values() ) {
+		
+		for( Plan pl : getAllNormtivePlans() ) {
 			Norm norm = containsNormPlan(pl, NormType.OBLIGATION);
 			if(norm != null) {
 				pl.setNormType(NormType.OBLIGATION);
@@ -350,14 +361,15 @@ public abstract class GoalAgent extends GenericAgent
 				return;
 			}
 			
-			for( Plan pl : getAllPlans().values() ) {	
-				if( pl.getNormType() == NormType.OBLIGATION ) {
-					executePlan(pl);
-					return;
-				}
+			for( Plan pl : getAllNormtivePlans() ) {
 				
 				if( plan.isEqual(pl) && pl.getNormType() == NormType.PROHIBITION ) { 
 					plan.setNormType(NormType.PROHIBITION);
+				}
+				
+				if( pl.getNormType() == NormType.OBLIGATION ) {
+					executePlan(pl);
+					return;
 				}
 			}
 				
@@ -383,15 +395,15 @@ public abstract class GoalAgent extends GenericAgent
 	/********************************************************************************************************************/
 	
 	// Retorna o Plan que o estado vigente restringe.
-	// Esta funÃ§Ã£o Ã© chamada dentro da funÃ§Ã£o normProcessBelief.
+	// Esta função é chamada dentro da funçãoo normProcessBelief.
 	protected abstract List<Plan> successorFunction(Belief belief);
 	
-	// MÃ©todo Next Function
+	// Método Next Function
 	protected abstract Belief nextFunction(Belief belief);
 	
-	 // Recebe o estado (crenÃ§a) e retorna um objetivo
+	 // Recebe o estado (crenças) e retorna um objetivo
 	protected abstract Goal formulateGoalFunction(Belief belief);
 	  
-	// Recebe o objetivo que o agente deseja alcanÃ§ar e retorna um plano para alcanÃ§ar tal objetivo
+	// Recebe o objetivo que o agente deseja alcançar e retorna um plano para alcançar tal objetivo
 	protected abstract Plan planning(Goal goal);
 }

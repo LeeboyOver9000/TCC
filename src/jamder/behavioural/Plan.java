@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-public class Plan extends SequentialBehaviour {
+public class Plan extends SequentialBehaviour implements Comparable<Plan>{
 	
 	private String name;
 	private int cost = 0;
@@ -72,5 +72,15 @@ public class Plan extends SequentialBehaviour {
 		}
 		
 		return false;
+	}
+
+	@Override
+	public int compareTo(Plan other) {
+		if( getCost() < other.getCost() )
+			return -1;
+		if( getCost() > other.getCost() )
+			return 1;
+		
+		return 0;
 	}
 }

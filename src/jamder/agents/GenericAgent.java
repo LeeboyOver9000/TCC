@@ -39,7 +39,7 @@ public class GenericAgent extends Agent {
 	
 	// Actions
 	public Action getAction(String key) { return actions.get(key); }
-	public void addAction(String key, Action action) { actions.put(key, action); }
+	public void addAction(Action action) { actions.put(action.getName(), action); }
 	public Action removeAction(String key) { return actions.remove(key); }
 	public void removeAllActions() { actions.clear(); }
 	public Hashtable<String, Action> getAllActions() { return actions; }

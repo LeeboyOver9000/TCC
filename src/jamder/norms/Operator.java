@@ -1,6 +1,8 @@
 package jamder.norms;
 
 public enum Operator {
+	HAVE,
+	DONT_HAVE,
 	ACHIEVED,
 	NOT_ACHIEVED,
 	IT_IS,

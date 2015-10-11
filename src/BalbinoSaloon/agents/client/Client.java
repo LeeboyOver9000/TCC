@@ -64,10 +64,10 @@ public class Client extends ModelAgent
 		leave = new LeaveTheSaloon(this);
 		drinking = new DrinkingBeer(this);
 		
-		addAction(order.getName(), order);
-		addAction(riot.getName(), riot);
-		addAction(leave.getName(), leave);
-		addAction(drinking.getName(), drinking);
+		addAction(order);
+		addAction(riot);
+		addAction(leave);
+		addAction(drinking);
 		
 		setWaiting(true);
 		setCurrentState(clientWaiting);

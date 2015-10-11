@@ -73,9 +73,9 @@ public class Waiter extends UtilityAgent {
 		takeToFreeze = new TakeToFreeze(this);
 		kickOutClient = new KickOutClient(this);
 		
-		addAction(sellBeer.getName(), sellBeer);
-		addAction(takeToFreeze.getName(), takeToFreeze);
-		addAction(kickOutClient.getName(), kickOutClient);
+		addAction(sellBeer);
+		addAction(takeToFreeze);
+		addAction(kickOutClient);
 	}
 	
 	public Refrigerator getRefrigerator() { return refrigerator; }
