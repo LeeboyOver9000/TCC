@@ -2,6 +2,7 @@ package WumpusWorld.gui;
 
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -35,7 +36,7 @@ public class Game extends JPanel implements Runnable
 
 	private void doDrawing(Graphics g) {
 		// Define the line's border
-		g.setColor(Color.GRAY);
+		g.setColor(Color.BLACK);
 
 		drawGrid(g);
 		drawGold(g);
@@ -90,7 +91,7 @@ public class Game extends JPanel implements Runnable
 		}
 	}
 	
-	private void drawText(Graphics g, String text,int posX, int posY, int offsetY) {
+	private void drawText(Graphics g, String text, int posX, int posY, int offsetY) {
 		Dimension size = getSize();
 
 		if (posX == -1 || posY == -1)
@@ -145,9 +146,11 @@ public class Game extends JPanel implements Runnable
 		for (int i = 0; i < y; i++) {
 			for (int j = 0; j < x; j++) {
 				if ( maze.getRoom(i, j).isStench() ) {
+					g.setFont( new Font("Stench", Font.BOLD, 16));
 					drawText(g, "Stench", i, j, 20);
 				}
 				if ( maze.getRoom(i, j).isBreeze() ) {
+					g.setFont( new Font("Breeze", Font.BOLD, 16));
 					drawText(g, "Breeze", i, j, 40);
 				}
 			}

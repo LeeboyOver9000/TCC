@@ -20,9 +20,17 @@ public class IfBeliefHappen extends NormConstraint {
 	public boolean isTrue() {
 		switch (operator) {
 			case IT_IS: {
-				if( belief.isNormativeState() )	return true;
+				if( belief.isNormativeState() ) {
+					return true;
+				} else {
+					return false;
+				}
 			} case NOT_IT_IS: { 
-				if( !belief.isNormativeState() )return true;
+				if( !belief.isNormativeState() ) {
+					return true;
+				} else {
+					return false;
+				}
 			} default:
 				return false;
 		}

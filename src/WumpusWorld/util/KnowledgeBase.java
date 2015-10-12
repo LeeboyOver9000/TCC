@@ -557,9 +557,8 @@ public class KnowledgeBase extends Belief {
 	
 	@Override
 	public boolean isNormativeState() {
-		if( agent.getArrow() > 1) {
+		if( agent.getArrow() > 0) 
 			return true;
-		}
 		
 		return false;
 	}
