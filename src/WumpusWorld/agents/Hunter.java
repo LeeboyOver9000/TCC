@@ -253,8 +253,8 @@ public class Hunter extends GoalAgent {
 			Goal goal = formulateGoalFunction(room); // Formulate the goal
 			goal = normProcessGoal(goal); // Make norm process on Goal
 			
-			System.out.println("Current Goal: " + goal.getName() ); // For evaluation
-			System.out.println("Number of Arrow: " + getArrow()); // For evaluation
+//			System.out.println("Current Goal: " + goal.getName() ); // For evaluation
+//			System.out.println("Number of Arrow: " + getArrow()); // For evaluation
 			
 			if( goal != null ) { // if the goal is null, there aren't goals allowed
 				Plan plan = planning(goal);

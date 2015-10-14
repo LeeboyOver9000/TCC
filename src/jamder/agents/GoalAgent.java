@@ -198,30 +198,28 @@ public abstract class GoalAgent extends GenericAgent
 				
 				// Verify for active obligation norm restricting the belief
 				Norm norm = containsNormBelief(belief, NormType.OBLIGATION);
-				if( norm != null ) { // if exist a obligation norm
+				if( norm != null ) { // if exist a obligation norm in current belief
 					int count = 0;
-					
-					for(Plan plan : plans) {
-						count++;
-						addNormativePlan(plan);
-						NormResource resource = new NormResource(plan);
-						Norm normTemp = new Norm( norm.getName() + "TEMP" + count, 
-								NormType.OBLIGATION, resource, norm.getNormConstraint() );
-						insertPlanTempNorm(normTemp);
-					}
-				}
-				
-				// Verify for active prohibition norm restricting the belief
-				norm = containsNormBelief(belief, NormType.PROHIBITION);
-				if( norm != null ) { // if exist a prohibition norm 
-					int count = 0;
-					
 					for(Plan plan : plans) {
 						count++;
 						addNormativePlan(plan);
 						NormResource resource = new NormResource(plan);
 						Norm normTemp = new Norm( norm.getName() + "TEMP" + count, 
 								NormType.PROHIBITION, resource, norm.getNormConstraint() );
+						insertPlanTempNorm(normTemp);
+					}
+				}
+				
+				// Verify for active prohibition norm restricting the belief
+				norm = containsNormBelief(belief, NormType.PROHIBITION);
+				if( norm != null ) { // if exist a prohibition norm in current belief
+					int count = 0;
+					for(Plan plan : plans) {
+						count++;
+						addNormativePlan(plan);
+						NormResource resource = new NormResource(plan);
+						Norm normTemp = new Norm( norm.getName() + "TEMP" + count,
+								NormType.OBLIGATION, resource, norm.getNormConstraint() );
 						insertPlanTempNorm(normTemp);
 					}
 				}
